@@ -14,7 +14,169 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      applications: {
+        Row: {
+          age: number
+          country: string
+          created_at: string
+          email: string
+          full_name: string
+          has_passport: boolean
+          id: string
+          manychat_subscriber_id: string | null
+          notes: string | null
+          paid_at: string | null
+          payment_amount: number | null
+          payment_currency: string | null
+          payment_reference: string | null
+          payment_status: string | null
+          phone: string
+          processing_fee: string | null
+          recruitment_cycle: string | null
+          status: Database["public"]["Enums"]["application_status"]
+          updated_at: string
+        }
+        Insert: {
+          age: number
+          country: string
+          created_at?: string
+          email: string
+          full_name: string
+          has_passport?: boolean
+          id?: string
+          manychat_subscriber_id?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          payment_amount?: number | null
+          payment_currency?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
+          phone: string
+          processing_fee?: string | null
+          recruitment_cycle?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          updated_at?: string
+        }
+        Update: {
+          age?: number
+          country?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          has_passport?: boolean
+          id?: string
+          manychat_subscriber_id?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          payment_amount?: number | null
+          payment_currency?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
+          phone?: string
+          processing_fee?: string | null
+          recruitment_cycle?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      manychat_logs: {
+        Row: {
+          application_id: string | null
+          created_at: string
+          direction: string
+          id: string
+          message_content: string | null
+          message_type: string
+          status: string | null
+          subscriber_id: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          created_at?: string
+          direction?: string
+          id?: string
+          message_content?: string | null
+          message_type: string
+          status?: string | null
+          subscriber_id?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          created_at?: string
+          direction?: string
+          id?: string
+          message_content?: string | null
+          message_type?: string
+          status?: string | null
+          subscriber_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manychat_logs_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_transactions: {
+        Row: {
+          amount: number
+          application_id: string | null
+          created_at: string
+          currency: string
+          customer_email: string | null
+          customer_phone: string | null
+          flutterwave_ref: string | null
+          id: string
+          metadata: Json | null
+          payment_type: string | null
+          status: string
+          transaction_ref: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          application_id?: string | null
+          created_at?: string
+          currency: string
+          customer_email?: string | null
+          customer_phone?: string | null
+          flutterwave_ref?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_type?: string | null
+          status?: string
+          transaction_ref: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          application_id?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_phone?: string | null
+          flutterwave_ref?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_type?: string | null
+          status?: string
+          transaction_ref?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_transactions_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +185,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      application_status:
+        | "pending"
+        | "paid"
+        | "verified"
+        | "matched"
+        | "deployed"
+        | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +318,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      application_status: [
+        "pending",
+        "paid",
+        "verified",
+        "matched",
+        "deployed",
+        "rejected",
+      ],
+    },
   },
 } as const
