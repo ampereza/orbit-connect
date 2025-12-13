@@ -34,7 +34,9 @@ export type Database = {
           processing_fee: string | null
           recruitment_cycle: string | null
           status: Database["public"]["Enums"]["application_status"]
+          telegram_chat_id: string | null
           updated_at: string
+          whatsapp_phone: string | null
         }
         Insert: {
           age: number
@@ -55,7 +57,9 @@ export type Database = {
           processing_fee?: string | null
           recruitment_cycle?: string | null
           status?: Database["public"]["Enums"]["application_status"]
+          telegram_chat_id?: string | null
           updated_at?: string
+          whatsapp_phone?: string | null
         }
         Update: {
           age?: number
@@ -76,7 +80,9 @@ export type Database = {
           processing_fee?: string | null
           recruitment_cycle?: string | null
           status?: Database["public"]["Enums"]["application_status"]
+          telegram_chat_id?: string | null
           updated_at?: string
+          whatsapp_phone?: string | null
         }
         Relationships: []
       }
@@ -120,6 +126,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notification_templates: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+          template_type: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          template_type: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          template_type?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       payment_transactions: {
         Row: {
@@ -203,6 +239,101 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      push_notification_logs: {
+        Row: {
+          application_id: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          platform: string
+          sent_at: string | null
+          status: string
+          template_id: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          platform: string
+          sent_at?: string | null
+          status?: string
+          template_id?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          platform?: string
+          sent_at?: string | null
+          status?: string
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_notification_logs_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "push_notification_logs_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "notification_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_messages: {
+        Row: {
+          ai_generated: boolean | null
+          application_id: string | null
+          content: string
+          created_at: string
+          direction: string
+          id: string
+          message_type: string
+          metadata: Json | null
+          platform: string
+          sender_id: string | null
+        }
+        Insert: {
+          ai_generated?: boolean | null
+          application_id?: string | null
+          content: string
+          created_at?: string
+          direction: string
+          id?: string
+          message_type: string
+          metadata?: Json | null
+          platform: string
+          sender_id?: string | null
+        }
+        Update: {
+          ai_generated?: boolean | null
+          application_id?: string | null
+          content?: string
+          created_at?: string
+          direction?: string
+          id?: string
+          message_type?: string
+          metadata?: Json | null
+          platform?: string
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_messages_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
