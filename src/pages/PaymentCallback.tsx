@@ -39,7 +39,11 @@ const PaymentCallback = () => {
 
         if (data.success && data.status === "successful") {
           setStatus("success");
-          setMessage("Your payment was successful! You will receive a confirmation message shortly.");
+          setMessage("Your payment was successful! Please complete your profile to proceed.");
+          // Store application ID for KYC redirect
+          if (data.applicationId) {
+            sessionStorage.setItem("kyc_application_id", data.applicationId);
+          }
         } else {
           setStatus("failed");
           setMessage(data.message || "Payment verification failed. Please contact support.");
@@ -82,11 +86,22 @@ const PaymentCallback = () => {
             <p className="text-muted-foreground mb-6">{message}</p>
             <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-4 mb-6">
               <p className="text-sm text-foreground">
-                <strong>Next Steps:</strong> You will receive updates via WhatsApp/SMS when our January 2025 recruitment cycle begins.
+                <strong>Next Step:</strong> Complete your profile with documents and references to finalize your application.
               </p>
             </div>
-            <Button variant="hero" onClick={() => navigate("/")} className="w-full">
-              Return Home
+            <Button 
+              variant="hero" 
+              onClick={() => {
+                const appId = sessionStorage.getItem("kyc_application_id");
+                if (appId) {
+                  navigate(`/kyc?application_id=${appId}`);
+                } else {
+                  navigate("/");
+                }
+              }} 
+              className="w-full"
+            >
+              Complete Profile
             </Button>
           </>
         )}
