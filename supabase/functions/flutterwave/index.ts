@@ -177,6 +177,7 @@ serve(async (req) => {
             success: true,
             status: "successful",
             data: verifyData.data,
+            applicationId: txData?.application_id,
           }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );

@@ -14,6 +14,174 @@ export type Database = {
   }
   public: {
     Tables: {
+      applicant_documents: {
+        Row: {
+          admin_notes: string | null
+          application_id: string
+          created_at: string
+          document_type: string
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          mime_type: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          application_id: string
+          created_at?: string
+          document_type: string
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          application_id?: string
+          created_at?: string
+          document_type?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applicant_documents_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      applicant_profiles: {
+        Row: {
+          application_id: string
+          certifications: string[] | null
+          created_at: string
+          education_institution: string | null
+          education_level: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relationship: string | null
+          id: string
+          job_title: string | null
+          languages: string[] | null
+          marital_status: string | null
+          next_of_kin_name: string | null
+          next_of_kin_phone: string | null
+          next_of_kin_relationship: string | null
+          number_of_dependents: number | null
+          previous_employer: string | null
+          skills: string[] | null
+          updated_at: string
+          years_of_experience: number | null
+        }
+        Insert: {
+          application_id: string
+          certifications?: string[] | null
+          created_at?: string
+          education_institution?: string | null
+          education_level?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          id?: string
+          job_title?: string | null
+          languages?: string[] | null
+          marital_status?: string | null
+          next_of_kin_name?: string | null
+          next_of_kin_phone?: string | null
+          next_of_kin_relationship?: string | null
+          number_of_dependents?: number | null
+          previous_employer?: string | null
+          skills?: string[] | null
+          updated_at?: string
+          years_of_experience?: number | null
+        }
+        Update: {
+          application_id?: string
+          certifications?: string[] | null
+          created_at?: string
+          education_institution?: string | null
+          education_level?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          id?: string
+          job_title?: string | null
+          languages?: string[] | null
+          marital_status?: string | null
+          next_of_kin_name?: string | null
+          next_of_kin_phone?: string | null
+          next_of_kin_relationship?: string | null
+          number_of_dependents?: number | null
+          previous_employer?: string | null
+          skills?: string[] | null
+          updated_at?: string
+          years_of_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applicant_profiles_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: true
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      applicant_references: {
+        Row: {
+          application_id: string
+          company_or_organization: string | null
+          created_at: string
+          id: string
+          reference_email: string | null
+          reference_name: string
+          reference_phone: string
+          relationship: string
+        }
+        Insert: {
+          application_id: string
+          company_or_organization?: string | null
+          created_at?: string
+          id?: string
+          reference_email?: string | null
+          reference_name: string
+          reference_phone: string
+          relationship: string
+        }
+        Update: {
+          application_id?: string
+          company_or_organization?: string | null
+          created_at?: string
+          id?: string
+          reference_email?: string | null
+          reference_name?: string
+          reference_phone?: string
+          relationship?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applicant_references_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       applications: {
         Row: {
           age: number
@@ -23,6 +191,7 @@ export type Database = {
           full_name: string
           has_passport: boolean
           id: string
+          kyc_completed: boolean | null
           manychat_subscriber_id: string | null
           notes: string | null
           paid_at: string | null
@@ -46,6 +215,7 @@ export type Database = {
           full_name: string
           has_passport?: boolean
           id?: string
+          kyc_completed?: boolean | null
           manychat_subscriber_id?: string | null
           notes?: string | null
           paid_at?: string | null
@@ -69,6 +239,7 @@ export type Database = {
           full_name?: string
           has_passport?: boolean
           id?: string
+          kyc_completed?: boolean | null
           manychat_subscriber_id?: string | null
           notes?: string | null
           paid_at?: string | null
