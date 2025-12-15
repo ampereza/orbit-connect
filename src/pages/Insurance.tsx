@@ -200,7 +200,7 @@ const Insurance = () => {
                   onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
                 />
                 <label htmlFor="terms" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
-                  I agree to the <a href="#" className="text-primary underline">Terms and Conditions</a> and 
+                  I agree to the <a href="/insurance/terms" className="text-primary underline hover:text-primary/80">Terms and Conditions</a> and 
                   understand that this insurance is valid for 12 months from the date of subscription.
                 </label>
               </div>

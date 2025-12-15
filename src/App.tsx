@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import Insurance from "./pages/Insurance";
 import InsuranceCallback from "./pages/InsuranceCallback";
+import InsuranceTerms from "./pages/InsuranceTerms";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/insurance" element={<Insurance />} />
+            <Route path="/insurance/terms" element={<InsuranceTerms />} />
             <Route path="/insurance-callback" element={<InsuranceCallback />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
