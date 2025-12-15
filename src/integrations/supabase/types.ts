@@ -257,6 +257,68 @@ export type Database = {
         }
         Relationships: []
       }
+      insurance_subscriptions: {
+        Row: {
+          amount: number
+          application_id: string | null
+          created_at: string
+          currency: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          expires_at: string | null
+          flutterwave_ref: string | null
+          id: string
+          is_client: boolean | null
+          payment_reference: string | null
+          starts_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          application_id?: string | null
+          created_at?: string
+          currency?: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          expires_at?: string | null
+          flutterwave_ref?: string | null
+          id?: string
+          is_client?: boolean | null
+          payment_reference?: string | null
+          starts_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          application_id?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          expires_at?: string | null
+          flutterwave_ref?: string | null
+          id?: string
+          is_client?: boolean | null
+          payment_reference?: string | null
+          starts_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_subscriptions_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       manychat_logs: {
         Row: {
           application_id: string | null

@@ -336,7 +336,7 @@ const KYC = () => {
   if (currentStep === "complete") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-card rounded-3xl p-8 shadow-lg border border-border text-center">
+        <div className="max-w-lg w-full bg-card rounded-3xl p-8 shadow-lg border border-border text-center">
           <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-10 h-10 text-success" />
           </div>
@@ -344,12 +344,36 @@ const KYC = () => {
           <p className="text-muted-foreground mb-6">
             Thank you for submitting your documents. Our team will review your application and contact you when the recruitment cycle begins.
           </p>
+          
+          {/* Insurance Reminder */}
+          <div className="bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 rounded-2xl p-6 mb-6 text-left">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground">Protect Yourself Abroad</h3>
+                <p className="text-sm text-muted-foreground">Insurance is mandatory for deployed workers</p>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Get comprehensive coverage for deportation, medical emergencies, death benefits, and loss of contract for just <strong className="text-foreground">$35/year</strong>.
+            </p>
+            <Button 
+              variant="hero" 
+              className="w-full" 
+              onClick={() => navigate(`/insurance?application_id=${applicationId}&client=true`)}
+            >
+              Get Insurance Now
+            </Button>
+          </div>
+          
           <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-4 mb-6">
             <p className="text-sm text-foreground">
               <strong>Next Steps:</strong> You will receive updates via WhatsApp/SMS about your application status.
             </p>
           </div>
-          <Button variant="hero" onClick={() => navigate("/")} className="w-full">Return Home</Button>
+          <Button variant="outline" onClick={() => navigate("/")} className="w-full">Return Home</Button>
         </div>
       </div>
     );
