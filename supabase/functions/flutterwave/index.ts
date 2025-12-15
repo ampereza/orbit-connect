@@ -11,7 +11,7 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 interface PaymentRequest {
-  action: "initialize" | "verify";
+  action: "initialize" | "verify" | "initialize_insurance" | "verify_insurance";
   applicationId?: string;
   amount: number;
   currency: string;
@@ -20,6 +20,7 @@ interface PaymentRequest {
   fullName: string;
   transactionRef?: string;
   redirectUrl?: string;
+  isClient?: boolean;
 }
 
 serve(async (req) => {
@@ -193,6 +194,139 @@ serve(async (req) => {
             success: false,
             status: verifyData.data?.status || "failed",
             message: "Payment verification failed",
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
+    // INSURANCE: Initialize insurance payment
+    if (action === "initialize_insurance") {
+      const txRef = `ORBIT-INS-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+
+      // Create insurance subscription record
+      const { data: subscription, error: subError } = await supabase
+        .from("insurance_subscriptions")
+        .insert({
+          application_id: applicationId || null,
+          customer_email: email,
+          customer_phone: phone,
+          customer_name: fullName,
+          amount: 35,
+          currency: "USD",
+          status: "pending",
+          payment_reference: txRef,
+          is_client: body.isClient || false
+        })
+        .select()
+        .single();
+
+      if (subError) {
+        console.error("Error creating insurance subscription:", subError);
+        throw new Error("Failed to create insurance subscription");
+      }
+
+      // Initialize Flutterwave payment
+      const flwResponse = await fetch("https://api.flutterwave.com/v3/payments", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${FLUTTERWAVE_SECRET_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tx_ref: txRef,
+          amount: 35,
+          currency: "USD",
+          redirect_url: body.redirectUrl || `${req.headers.get("origin")}/insurance-callback`,
+          customer: {
+            email,
+            phone_number: phone,
+            name: fullName,
+          },
+          customizations: {
+            title: "Orbit Employ Insurance",
+            description: "Annual Insurance Subscription - $35/year",
+            logo: "https://orbitemploy.com/logo.png",
+          },
+          meta: {
+            subscription_id: subscription.id,
+            payment_type: "insurance",
+          },
+        }),
+      });
+
+      const flwData = await flwResponse.json();
+      console.log("Flutterwave insurance response:", flwData);
+
+      if (flwData.status === "success") {
+        return new Response(
+          JSON.stringify({
+            success: true,
+            paymentLink: flwData.data.link,
+            transactionRef: txRef,
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      } else {
+        throw new Error(flwData.message || "Failed to initialize insurance payment");
+      }
+    }
+
+    // INSURANCE: Verify insurance payment
+    if (action === "verify_insurance") {
+      if (!transactionRef) {
+        throw new Error("Transaction reference is required");
+      }
+
+      // Verify payment with Flutterwave
+      const verifyResponse = await fetch(
+        `https://api.flutterwave.com/v3/transactions/verify_by_reference?tx_ref=${transactionRef}`,
+        {
+          headers: {
+            "Authorization": `Bearer ${FLUTTERWAVE_SECRET_KEY}`,
+          },
+        }
+      );
+
+      const verifyData = await verifyResponse.json();
+      console.log("Flutterwave insurance verify response:", verifyData);
+
+      if (verifyData.status === "success" && verifyData.data.status === "successful") {
+        const now = new Date();
+        const expiresAt = new Date(now);
+        expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+
+        // Update insurance subscription
+        await supabase
+          .from("insurance_subscriptions")
+          .update({
+            status: "active",
+            flutterwave_ref: verifyData.data.flw_ref,
+            starts_at: now.toISOString(),
+            expires_at: expiresAt.toISOString(),
+          })
+          .eq("payment_reference", transactionRef);
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            status: "successful",
+            data: verifyData.data,
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      } else {
+        // Update subscription as failed
+        await supabase
+          .from("insurance_subscriptions")
+          .update({ status: "failed" })
+          .eq("payment_reference", transactionRef);
+
+        return new Response(
+          JSON.stringify({
+            success: false,
+            status: verifyData.data?.status || "failed",
+            message: "Insurance payment verification failed",
           }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
