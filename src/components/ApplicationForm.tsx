@@ -7,14 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import { Send, Loader2, CreditCard } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-
-const countries = [
-  { value: "uganda", label: "Uganda 🇺🇬", fee: "50000", currency: "UGX", displayFee: "UGX 50,000" },
-  { value: "kenya", label: "Kenya 🇰🇪", fee: "1750", currency: "KES", displayFee: "KES 1,750" },
-  { value: "tanzania", label: "Tanzania 🇹🇿", fee: "35000", currency: "TZS", displayFee: "TZS 35,000" },
-  { value: "rwanda", label: "Rwanda 🇷🇼", fee: "17500", currency: "RWF", displayFee: "RWF 17,500" },
-  { value: "burundi", label: "Burundi 🇧🇮", fee: "35000", currency: "BIF", displayFee: "BIF 35,000" },
-];
+import { applicationFees } from "@/config/applicationFees";
 
 export const ApplicationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,7 +23,7 @@ export const ApplicationForm = () => {
     agreeTerms: false,
   });
 
-  const selectedCountry = countries.find((c) => c.value === formData.country);
+  const selectedCountry = applicationFees.find((c) => c.value === formData.country);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -233,7 +226,7 @@ export const ApplicationForm = () => {
                         <SelectValue placeholder="Select your country" />
                       </SelectTrigger>
                       <SelectContent>
-                        {countries.map((country) => (
+                        {applicationFees.map((country) => (
                           <SelectItem key={country.value} value={country.value}>
                             {country.label}
                           </SelectItem>
