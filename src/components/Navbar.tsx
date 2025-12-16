@@ -53,6 +53,12 @@ export const Navbar = () => {
             >
               Apply
             </button>
+            <button
+              onClick={() => scrollToSection("faq")}
+              className={`font-medium transition-colors ${isScrolled ? 'text-foreground hover:text-secondary' : 'text-card/80 hover:text-card'}`}
+            >
+              FAQ
+            </button>
             <Button
               variant={isScrolled ? "default" : "hero"}
               size="sm"
@@ -90,6 +96,12 @@ export const Navbar = () => {
                 className="text-foreground font-medium py-2 text-left hover:text-secondary transition-colors"
               >
                 Apply
+              </button>
+              <button
+                onClick={() => scrollToSection("faq")}
+                className="text-foreground font-medium py-2 text-left hover:text-secondary transition-colors"
+              >
+                FAQ
               </button>
               <Button
                 variant="hero"
