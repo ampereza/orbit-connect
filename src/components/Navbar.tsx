@@ -32,7 +32,11 @@ export const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <img src={logo} alt="Orbit Employ" className="h-10 w-auto" />
+            <img 
+              src={logo} 
+              alt="Orbit Employ" 
+              className={`h-10 w-auto transition-all duration-300 ${!isScrolled ? 'brightness-0 invert' : ''}`} 
+            />
           </div>
 
           {/* Desktop Navigation */}
