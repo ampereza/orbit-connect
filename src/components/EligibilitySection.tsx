@@ -10,9 +10,9 @@ const requirements = [
 ];
 
 const countries = [
-  { name: "Uganda", flag: "🇺🇬", fee: "UGX 10,000" },
-  { name: "Kenya", flag: "🇰🇪", fee: "KES 350" },
-  { name: "Tanzania", flag: "🇹🇿", fee: "TZS 7,000" },
+  { name: "Uganda", flag: "🇺🇬", fee: "UGX 50,000" },
+  { name: "Kenya", flag: "🇰🇪", fee: "KES 1,750" },
+  { name: "Tanzania", flag: "🇹🇿", fee: "TZS 35,000" },
 ];
 
 export const EligibilitySection = () => {

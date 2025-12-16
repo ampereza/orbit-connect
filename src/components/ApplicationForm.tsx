@@ -9,11 +9,11 @@ import { Send, Loader2, CreditCard } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const countries = [
-  { value: "uganda", label: "Uganda 🇺🇬", fee: "10000", currency: "UGX", displayFee: "UGX 10,000" },
-  { value: "kenya", label: "Kenya 🇰🇪", fee: "350", currency: "KES", displayFee: "KES 350" },
-  { value: "tanzania", label: "Tanzania 🇹🇿", fee: "7000", currency: "TZS", displayFee: "TZS 7,000" },
-  { value: "rwanda", label: "Rwanda 🇷🇼", fee: "3500", currency: "RWF", displayFee: "RWF 3,500" },
-  { value: "burundi", label: "Burundi 🇧🇮", fee: "7000", currency: "BIF", displayFee: "BIF 7,000" },
+  { value: "uganda", label: "Uganda 🇺🇬", fee: "50000", currency: "UGX", displayFee: "UGX 50,000" },
+  { value: "kenya", label: "Kenya 🇰🇪", fee: "1750", currency: "KES", displayFee: "KES 1,750" },
+  { value: "tanzania", label: "Tanzania 🇹🇿", fee: "35000", currency: "TZS", displayFee: "TZS 35,000" },
+  { value: "rwanda", label: "Rwanda 🇷🇼", fee: "17500", currency: "RWF", displayFee: "RWF 17,500" },
+  { value: "burundi", label: "Burundi 🇧🇮", fee: "35000", currency: "BIF", displayFee: "BIF 35,000" },
 ];
 
 export const ApplicationForm = () => {
