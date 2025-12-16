@@ -1,4 +1,5 @@
 import { Check, AlertCircle } from "lucide-react";
+import { eligibilityCountries } from "@/config/applicationFees";
 
 const requirements = [
   { text: "Age between 18 and 49 years", required: true },
@@ -7,12 +8,6 @@ const requirements = [
   { text: "Uganda, Kenya, Tanzania, Rwanda, or Burundi", required: false },
   { text: "Willingness to work abroad", required: true },
   { text: "Basic communication skills", required: false },
-];
-
-const countries = [
-  { name: "Uganda", flag: "🇺🇬", fee: "UGX 50,000" },
-  { name: "Kenya", flag: "🇰🇪", fee: "KES 1,750" },
-  { name: "Tanzania", flag: "🇹🇿", fee: "TZS 35,000" },
 ];
 
 export const EligibilitySection = () => {
@@ -61,7 +56,7 @@ export const EligibilitySection = () => {
               </p>
 
               <div className="space-y-4">
-                {countries.map((country) => (
+                {eligibilityCountries.map((country) => (
                   <div
                     key={country.name}
                     className="flex items-center justify-between bg-background rounded-xl p-5 border border-border hover:border-secondary/30 transition-colors"
@@ -71,7 +66,7 @@ export const EligibilitySection = () => {
                       <span className="font-semibold text-foreground">{country.name}</span>
                     </div>
                     <span className="font-display font-bold text-xl text-primary">
-                      {country.fee}
+                      {country.displayFee}
                     </span>
                   </div>
                 ))}
