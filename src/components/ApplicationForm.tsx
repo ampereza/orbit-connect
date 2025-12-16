@@ -13,6 +13,7 @@ export const ApplicationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
+  const [sameAsPhone, setSameAsPhone] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -66,7 +67,7 @@ export const ApplicationForm = () => {
           full_name: formData.fullName,
           email: formData.email,
           phone: formData.phone,
-          whatsapp_phone: formData.whatsappPhone || formData.phone,
+          whatsapp_phone: sameAsPhone ? formData.phone : (formData.whatsappPhone || formData.phone),
           country: formData.country,
           age: parseInt(formData.age),
           has_passport: formData.hasPassport,
@@ -215,15 +216,33 @@ export const ApplicationForm = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="whatsappPhone" className="text-foreground font-medium">
-                      WhatsApp Number *
-                    </Label>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="whatsappPhone" className="text-foreground font-medium">
+                        WhatsApp Number *
+                      </Label>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="sameAsPhone"
+                          checked={sameAsPhone}
+                          onCheckedChange={(checked) => {
+                            setSameAsPhone(checked as boolean);
+                            if (checked) {
+                              setFormData({ ...formData, whatsappPhone: formData.phone });
+                            }
+                          }}
+                        />
+                        <Label htmlFor="sameAsPhone" className="text-sm text-muted-foreground cursor-pointer">
+                          Same as phone
+                        </Label>
+                      </div>
+                    </div>
                     <Input
                       id="whatsappPhone"
                       type="tel"
                       placeholder="+256 700 000000"
-                      value={formData.whatsappPhone}
+                      value={sameAsPhone ? formData.phone : formData.whatsappPhone}
                       onChange={(e) => setFormData({ ...formData, whatsappPhone: e.target.value })}
+                      disabled={sameAsPhone}
                       required
                       className="h-12"
                     />
