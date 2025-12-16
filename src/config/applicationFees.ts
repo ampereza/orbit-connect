@@ -16,5 +16,5 @@ export const applicationFees: CountryFee[] = [
   { value: "burundi", label: "Burundi 🇧🇮", name: "Burundi", flag: "🇧🇮", fee: "35000", currency: "BIF", displayFee: "BIF 35,000" },
 ];
 
-// Subset of countries displayed in the eligibility section
-export const eligibilityCountries = applicationFees.slice(0, 3);
+// Countries displayed in the eligibility section
+export const eligibilityCountries = applicationFees;
