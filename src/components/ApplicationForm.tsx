@@ -17,6 +17,7 @@ export const ApplicationForm = () => {
     fullName: "",
     email: "",
     phone: "",
+    whatsappPhone: "",
     country: "",
     age: "",
     hasPassport: false,
@@ -65,6 +66,7 @@ export const ApplicationForm = () => {
           full_name: formData.fullName,
           email: formData.email,
           phone: formData.phone,
+          whatsapp_phone: formData.whatsappPhone || formData.phone,
           country: formData.country,
           age: parseInt(formData.age),
           has_passport: formData.hasPassport,
@@ -211,6 +213,21 @@ export const ApplicationForm = () => {
                       required
                       className="h-12"
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="whatsappPhone" className="text-foreground font-medium">
+                      WhatsApp Number *
+                    </Label>
+                    <Input
+                      id="whatsappPhone"
+                      type="tel"
+                      placeholder="+256 700 000000"
+                      value={formData.whatsappPhone}
+                      onChange={(e) => setFormData({ ...formData, whatsappPhone: e.target.value })}
+                      required
+                      className="h-12"
+                    />
+                    <p className="text-xs text-muted-foreground">We'll contact you via WhatsApp for updates</p>
                   </div>
                 </div>
 
