@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Globe, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -31,12 +32,7 @@ export const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
-              <Globe className="w-6 h-6 text-secondary-foreground" />
-            </div>
-            <span className={`font-display text-xl font-bold transition-colors ${isScrolled ? 'text-foreground' : 'text-card'}`}>
-              Orbit Employ
-            </span>
+            <img src={logo} alt="Orbit Employ" className="h-10 w-auto" />
           </div>
 
           {/* Desktop Navigation */}
