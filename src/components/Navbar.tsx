@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Gift } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 export const Navbar = () => {
@@ -59,6 +60,13 @@ export const Navbar = () => {
             >
               FAQ
             </button>
+            <Link
+              to="/referral"
+              className={`font-medium transition-colors flex items-center gap-1 ${isScrolled ? 'text-secondary hover:text-secondary/80' : 'text-secondary hover:text-secondary/80'}`}
+            >
+              <Gift className="w-4 h-4" />
+              Earn Rewards
+            </Link>
             <Button
               variant={isScrolled ? "default" : "hero"}
               size="sm"
@@ -103,6 +111,14 @@ export const Navbar = () => {
               >
                 FAQ
               </button>
+              <Link
+                to="/referral"
+                className="text-secondary font-medium py-2 text-left hover:text-secondary/80 transition-colors flex items-center gap-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Gift className="w-4 h-4" />
+                Earn Rewards
+              </Link>
               <Button
                 variant="hero"
                 className="w-full mt-2"
