@@ -109,5 +109,3 @@ export const MobileBottomNav = () => {
     </nav>
   );
 };
-EOF
-echo "done"
