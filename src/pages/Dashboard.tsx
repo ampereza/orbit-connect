@@ -37,6 +37,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [hasRecentActivity, setHasRecentActivity] = useState(true);
   const [matchedJobs, setMatchedJobs] = useState<Application[]>([]);
+  const [hasSkills, setHasSkills] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
