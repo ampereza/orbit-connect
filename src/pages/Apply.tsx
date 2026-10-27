@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Lock } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { MobileBottomNav } from '@/components/MobileBottomNav';
 
 const Apply = () => {
   const { user, loading } = useAuth();
@@ -49,9 +50,10 @@ const Apply = () => {
             </Button>
           </div>
         </header>
-        <main className="py-8">
+        <main className="py-8 pb-24">
           <ApplicationForm />
         </main>
+        <MobileBottomNav />
       </div>
     </>
   );

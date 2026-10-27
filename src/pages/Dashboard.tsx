@@ -5,7 +5,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell, FileText, Briefcase, LogOut, Loader2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Bell, FileText, Briefcase, LogOut, Loader2, LayoutDashboard } from 'lucide-react';
+import { MobileBottomNav } from '@/components/MobileBottomNav';
 import { toast } from 'sonner';
 
 interface Application {
@@ -32,6 +34,7 @@ const Dashboard = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('dashboard');
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -44,6 +47,14 @@ const Dashboard = () => {
       fetchData();
     }
   }, [user]);
+
+  useEffect(() => {
+    const handleSwitchTab = (e: any) => {
+      setActiveTab(e.detail);
+    };
+    window.addEventListener('switchTab', handleSwitchTab);
+    return () => window.removeEventListener('switchTab', handleSwitchTab);
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -241,6 +252,7 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
+      <MobileBottomNav />
     </div>
   );
 };

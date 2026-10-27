@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Briefcase, MapPin, Search, ArrowRight } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { MobileBottomNav } from '@/components/MobileBottomNav';
 
 interface Job {
   id: string;
@@ -168,6 +169,7 @@ const Jobs = () => {
             </div>
           )}
         </main>
+        <MobileBottomNav />
       </div>
     </>
   );
