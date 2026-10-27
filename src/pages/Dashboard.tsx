@@ -141,7 +141,7 @@ const Dashboard = () => {
           </div>
           <div className="flex items-center gap-4">
             <Button variant="default" asChild>
-              <Link to="/jobs">Apply for Jobs</Link>
+              <Link to="/kyc">Profile</Link>
             </Button>
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
