@@ -41,50 +41,13 @@ export const Navbar = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            <button
-              onClick={() => scrollToSection("process")}
-              className={`font-medium transition-colors ${isScrolled ? 'text-foreground hover:text-secondary' : 'text-card/80 hover:text-card'}`}
-            >
-              How It Works
-            </button>
-            <Link
-              to="/jobs"
-              className={`font-medium transition-colors ${isScrolled ? 'text-foreground hover:text-secondary' : 'text-card/80 hover:text-card'}`}
-            >
-              Jobs
-            </Link>
-            <button
-              onClick={() => scrollToSection("apply")}
-              className={`font-medium transition-colors ${isScrolled ? 'text-foreground hover:text-secondary' : 'text-card/80 hover:text-card'}`}
-            >
-              Apply
-            </button>
-            <Link
-              to="/dashboard"
-              className={`font-medium transition-colors ${isScrolled ? 'text-foreground hover:text-secondary' : 'text-card/80 hover:text-card'}`}
-            >
-              Dashboard
-            </Link>
-            <button
-              onClick={() => scrollToSection("faq")}
-              className={`font-medium transition-colors ${isScrolled ? 'text-foreground hover:text-secondary' : 'text-card/80 hover:text-card'}`}
-            >
-              FAQ
-            </button>
-            <Link
-              to="/referral"
-              className={`font-medium transition-colors flex items-center gap-1 ${isScrolled ? 'text-secondary hover:text-secondary/80' : 'text-secondary hover:text-secondary/80'}`}
-            >
-              <Gift className="w-4 h-4" />
-              Earn Rewards
-            </Link>
+          <div className="hidden md:flex items-center gap-4">
             <Button
-              variant={isScrolled ? "default" : "hero"}
+              variant={isScrolled ? "outline" : "hero"}
               size="sm"
               asChild
             >
-              <Link to="/jobs">Apply Now</Link>
+              <Link to="/auth">Login / Sign Up</Link>
             </Button>
           </div>
 
@@ -131,27 +94,13 @@ export const Navbar = () => {
               >
                 Dashboard
               </Link>
-              <button
-                onClick={() => scrollToSection("faq")}
-                className="text-foreground font-medium py-2 text-left hover:text-secondary transition-colors"
-              >
-                FAQ
-              </button>
-              <Link
-                to="/referral"
-                className="text-secondary font-medium py-2 text-left hover:text-secondary/80 transition-colors flex items-center gap-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <Gift className="w-4 h-4" />
-                Earn Rewards
-              </Link>
               <Button
                 variant="hero"
                 className="w-full mt-2"
                 asChild
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <Link to="/jobs">Apply Now</Link>
+                <Link to="/auth">Login / Sign Up</Link>
               </Button>
             </div>
           </div>
