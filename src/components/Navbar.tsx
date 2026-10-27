@@ -48,12 +48,24 @@ export const Navbar = () => {
             >
               How It Works
             </button>
+            <Link
+              to="/jobs"
+              className={`font-medium transition-colors ${isScrolled ? 'text-foreground hover:text-secondary' : 'text-card/80 hover:text-card'}`}
+            >
+              Jobs
+            </Link>
             <button
               onClick={() => scrollToSection("apply")}
               className={`font-medium transition-colors ${isScrolled ? 'text-foreground hover:text-secondary' : 'text-card/80 hover:text-card'}`}
             >
               Apply
             </button>
+            <Link
+              to="/dashboard"
+              className={`font-medium transition-colors ${isScrolled ? 'text-foreground hover:text-secondary' : 'text-card/80 hover:text-card'}`}
+            >
+              Dashboard
+            </Link>
             <button
               onClick={() => scrollToSection("faq")}
               className={`font-medium transition-colors ${isScrolled ? 'text-foreground hover:text-secondary' : 'text-card/80 hover:text-card'}`}
@@ -99,12 +111,26 @@ export const Navbar = () => {
               >
                 How It Works
               </button>
+              <Link
+                to="/jobs"
+                className="text-foreground font-medium py-2 text-left hover:text-secondary transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Jobs
+              </Link>
               <button
                 onClick={() => scrollToSection("apply")}
                 className="text-foreground font-medium py-2 text-left hover:text-secondary transition-colors"
               >
                 Apply
               </button>
+              <Link
+                to="/dashboard"
+                className="text-foreground font-medium py-2 text-left hover:text-secondary transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
               <button
                 onClick={() => scrollToSection("faq")}
                 className="text-foreground font-medium py-2 text-left hover:text-secondary transition-colors"

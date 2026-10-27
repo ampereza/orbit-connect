@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,15 +9,20 @@ import { toast } from "@/hooks/use-toast";
 import { Send, Loader2, CreditCard } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { applicationFees } from "@/config/applicationFees";
+import { useAuth } from "@/hooks/useAuth";
 
 export const ApplicationForm = () => {
+  const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const jobId = searchParams.get('job');
+  const [jobTitle, setJobTitle] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
   const [sameAsPhone, setSameAsPhone] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
-    email: "",
+    email: user?.email || "",
     phone: "",
     whatsappPhone: "",
     country: "",
@@ -24,6 +30,34 @@ export const ApplicationForm = () => {
     hasPassport: false,
     agreeTerms: false,
   });
+
+  useEffect(() => {
+    if (user?.email && !formData.email) {
+      setFormData(prev => ({ ...prev, email: user.email || "" }));
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (jobId) {
+      fetchJob();
+    }
+  }, [jobId]);
+
+  const fetchJob = async () => {
+    try {
+      const { data } = await supabase
+        .from('jobs')
+        .select('title, country')
+        .eq('id', jobId)
+        .single();
+      if (data) {
+        setJobTitle(data.title);
+        // Optionally prefill country if it matches
+      }
+    } catch (error) {
+      console.error('Error fetching job:', error);
+    }
+  };
 
   const selectedCountry = applicationFees.find((c) => c.value === formData.country);
 
@@ -73,6 +107,8 @@ export const ApplicationForm = () => {
           has_passport: formData.hasPassport,
           processing_fee: selectedCountry.displayFee,
           recruitment_cycle: "January 2025",
+          job_id: jobId || null,
+          user_id: user?.id || null,
         })
         .select()
         .single();
@@ -160,10 +196,10 @@ export const ApplicationForm = () => {
               Start Your Journey
             </span>
             <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4">
-              Apply Now
+              {jobTitle ? `Apply for ${jobTitle}` : "Apply Now"}
             </h2>
             <p className="text-muted-foreground text-lg">
-              Fill in your details below. You'll be contacted during our next recruitment cycle in January.
+              {jobTitle ? "Complete your application for this position" : "Fill in your details below. You'll be contacted during our next recruitment cycle in January."}
             </p>
           </div>
 

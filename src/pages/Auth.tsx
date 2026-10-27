@@ -17,8 +17,12 @@ const Auth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && user && isAdmin) {
-      navigate('/admin');
+    if (!loading && user) {
+      if (isAdmin) {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     }
   }, [user, isAdmin, loading, navigate]);
 
@@ -58,7 +62,7 @@ const Auth = () => {
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success('Account created! You can now sign in.');
+      toast.success('Account created! Please check your email to verify.');
     }
   };
 
@@ -77,8 +81,8 @@ const Auth = () => {
           <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-primary flex items-center justify-center">
             <Shield className="h-6 w-6 text-primary-foreground" />
           </div>
-          <CardTitle className="font-display text-2xl">Admin Portal</CardTitle>
-          <CardDescription>Sign in to access the admin dashboard</CardDescription>
+          <CardTitle className="font-display text-2xl">Account Access</CardTitle>
+          <CardDescription>Sign in to access your dashboard</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
