@@ -82,9 +82,9 @@ export const Navbar = () => {
             <Button
               variant={isScrolled ? "default" : "hero"}
               size="sm"
-              onClick={() => scrollToSection("apply")}
+              asChild
             >
-              Get Started
+              <Link to="/jobs">Apply Now</Link>
             </Button>
           </div>
 
@@ -148,9 +148,10 @@ export const Navbar = () => {
               <Button
                 variant="hero"
                 className="w-full mt-2"
-                onClick={() => scrollToSection("apply")}
+                asChild
+                onClick={() => setIsMobileMenuOpen(false)}
               >
-                Get Started
+                <Link to="/jobs">Apply Now</Link>
               </Button>
             </div>
           </div>

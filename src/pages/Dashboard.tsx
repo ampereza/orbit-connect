@@ -121,8 +121,8 @@ const Dashboard = () => {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">My Dashboard</h1>
           <div className="flex items-center gap-4">
-            <Button variant="outline" asChild>
-              <Link to="/jobs">Browse Jobs</Link>
+            <Button variant="default" asChild>
+              <Link to="/jobs">Apply for Jobs</Link>
             </Button>
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />

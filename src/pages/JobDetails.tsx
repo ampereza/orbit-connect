@@ -108,7 +108,7 @@ const JobDetails = () => {
                 </div>
               </div>
               <Button size="lg" asChild>
-                <Link to={`/?job=${job.id}`}>Apply for this Job</Link>
+                <Link to={`/apply?job=${job.id}`}>Apply for this Job</Link>
               </Button>
             </div>
           </div>
@@ -151,7 +151,7 @@ const JobDetails = () => {
                     Start your application process for this position
                   </p>
                   <Button size="lg" asChild>
-                    <Link to={`/?job=${job.id}`}>Apply Now</Link>
+                    <Link to={`/apply?job=${job.id}`}>Apply Now</Link>
                   </Button>
                 </div>
               </CardContent>
