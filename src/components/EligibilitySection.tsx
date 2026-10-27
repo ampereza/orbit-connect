@@ -48,7 +48,7 @@ export const EligibilitySection = () => {
               <div className="flex items-center gap-3 mb-6">
                 <AlertCircle className="w-6 h-6 text-secondary" />
                 <h3 className="font-display text-2xl font-bold text-foreground">
-                  Application Processing Fee
+                  Processing Fee
                 </h3>
               </div>
               <p className="text-muted-foreground mb-8">
