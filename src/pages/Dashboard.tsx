@@ -127,10 +127,18 @@ const Dashboard = () => {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10 pb-20 md:pb-0">
+      <header className="border-b bg-card/80 backdrop-blur supports-[backdrop-filter]:bg-card/60 sticky top-0 z-40 shadow-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">My Dashboard</h1>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20">
+              <LayoutDashboard className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-xl md:text-2xl font-bold tracking-tight">Dashboard</h1>
+              <p className="text-xs text-muted-foreground hidden sm:block">Track your application progress</p>
+            </div>
+          </div>
           <div className="flex items-center gap-4">
             <Button variant="default" asChild>
               <Link to="/jobs">Apply for Jobs</Link>
@@ -166,7 +174,7 @@ const Dashboard = () => {
               <CardContent>
                 {applications.length === 0 ? (
                   <div className="text-center py-8">
-                    <p className="text-muted-foreground mb-4">You haven't applied to any jobs yet</p>
+                    <p className="text-muted-foreground mb-4">Start your job application</p>
                     <Button asChild>
                       <Link to="/jobs">Browse Available Jobs</Link>
                     </Button>
@@ -177,10 +185,10 @@ const Dashboard = () => {
                       <div key={app.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div>
                           <h3 className="font-semibold">
-                            {app.jobs?.title || 'Job Application'}
+                            {app.jobs?.title || 'Application'}
                           </h3>
                           <p className="text-sm text-muted-foreground">
-                            {app.jobs?.country || app.country} • Applied {new Date(app.created_at).toLocaleDateString()}
+                            {app.jobs?.country || app.country} • Applied on {new Date(app.created_at).toLocaleDateString()}
                           </p>
                         </div>
                         <Badge className={getStatusColor(app.status)}>
@@ -200,13 +208,13 @@ const Dashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="h-5 w-5" />
-                  Notifications
+                  Message Center
                 </CardTitle>
-                <CardDescription>Recent updates</CardDescription>
+                <CardDescription>Latest activity</CardDescription>
               </CardHeader>
               <CardContent>
                 {notifications.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-4">No notifications</p>
+                  <p className="text-center text-muted-foreground py-4">No new notifications</p>
                 ) : (
                   <div className="space-y-3">
                     {notifications.map((notif) => (
@@ -231,20 +239,20 @@ const Dashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Briefcase className="h-5 w-5" />
-                  Quick Actions
+                  Quick Links
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 <Button variant="outline" className="w-full justify-start" asChild>
                   <Link to="/jobs">
                     <Briefcase className="h-4 w-4 mr-2" />
-                    Browse Jobs
+                    View All Jobs
                   </Link>
                 </Button>
                 <Button variant="outline" className="w-full justify-start" asChild>
                   <Link to="/kyc">
                     <FileText className="h-4 w-4 mr-2" />
-                    Complete KYC
+                    Finish KYC
                   </Link>
                 </Button>
               </CardContent>
