@@ -200,6 +200,17 @@ const KYC = () => {
   const saveBioData = async () => {
     if (!applicationId) return false;
     
+    // Validate skills are provided
+    if (!bioData.skills || bioData.skills.trim() === "") {
+      toast({
+        title: "Error",
+        description: "Please select at least one skill",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+      return false;
+    }
+    
     try {
       const { error } = await supabase
         .from("applicant_profiles")
@@ -463,14 +474,16 @@ const KYC = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="skills">Skills (comma-separated)</Label>
+                  <Label htmlFor="skills">Skills (comma-separated) *</Label>
                   <Input 
                     id="skills" 
                     name="skills" 
                     value={bioData.skills}
                     onChange={handleBioChange}
                     placeholder="e.g., Driving, Cooking, Cleaning"
+                    required
                   />
+                  <p className="text-xs text-muted-foreground mt-1">Select at least one skill to match with jobs</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="languages">Languages (comma-separated)</Label>

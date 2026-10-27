@@ -35,6 +35,8 @@ const Dashboard = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [hasRecentActivity, setHasRecentActivity] = useState(true);
+  const [matchedJobs, setMatchedJobs] = useState<Application[]>([]);
 
   useEffect(() => {
     if (!authLoading && !user) {
