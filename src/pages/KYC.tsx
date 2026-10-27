@@ -100,9 +100,9 @@ const KYC = () => {
   });
   
   const [documents, setDocuments] = useState<DocumentUpload[]>([
-    { type: "passport", label: "Passport Copy", file: null, uploaded: false, required: true },
-    { type: "police_clearance", label: "International Police Clearance", file: null, uploaded: false, required: true },
     { type: "cv", label: "CV / Resume", file: null, uploaded: false, required: true },
+    { type: "national_id", label: "National ID Photo", file: null, uploaded: false, required: true },
+    { type: "passport_photo", label: "Passport Photo", file: null, uploaded: false, required: true },
     { type: "education_cert", label: "Education Certificate", file: null, uploaded: false, required: false },
     { type: "medical_cert", label: "Medical Certificate", file: null, uploaded: false, required: false }
   ]);
