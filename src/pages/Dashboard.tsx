@@ -6,8 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Bell, FileText, Briefcase, LogOut, Loader2, LayoutDashboard } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Bell, FileText, Briefcase, LogOut, Loader2, LayoutDashboard, MessageSquare } from 'lucide-react';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
+import { MessagesList } from '@/components/messaging/MessagesList';
 import { toast } from 'sonner';
 
 interface Application {
@@ -38,6 +40,7 @@ const Dashboard = () => {
   const [hasRecentActivity, setHasRecentActivity] = useState(true);
   const [matchedJobs, setMatchedJobs] = useState<Application[]>([]);
   const [hasSkills, setHasSkills] = useState(false);
+  const [messagingApplication, setMessagingApplication] = useState<Application | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -185,7 +188,7 @@ const Dashboard = () => {
                 ) : (
                   <div className="space-y-4">
                     {applications.map((app) => (
-                      <div key={app.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div key={app.id} className="flex flex-col gap-3 p-4 border rounded-lg sm:flex-row sm:items-center sm:justify-between">
                         <div>
                           <h3 className="font-semibold">
                             {app.jobs?.title || 'Application'}
@@ -194,9 +197,19 @@ const Dashboard = () => {
                             {app.jobs?.country || app.country} • Applied on {new Date(app.created_at).toLocaleDateString()}
                           </p>
                         </div>
-                        <Badge className={getStatusColor(app.status)}>
-                          {app.status}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge className={getStatusColor(app.status)}>
+                            {app.status}
+                          </Badge>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setMessagingApplication(app)}
+                          >
+                            <MessageSquare className="h-4 w-4 mr-2" />
+                            Messages
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -263,6 +276,33 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
+
+      <Dialog
+        open={Boolean(messagingApplication)}
+        onOpenChange={(open) => {
+          if (!open) setMessagingApplication(null);
+        }}
+      >
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              {messagingApplication?.jobs?.title
+                ? `${messagingApplication.jobs.title} messages`
+                : 'Application messages'}
+            </DialogTitle>
+            <DialogDescription>
+              Talk directly with the Orbit Connect team about this application.
+            </DialogDescription>
+          </DialogHeader>
+          {messagingApplication && (
+            <MessagesList
+              applicationId={messagingApplication.id}
+              className="max-h-[60vh]"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
       <MobileBottomNav />
     </div>
   );

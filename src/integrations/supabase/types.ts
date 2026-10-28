@@ -186,11 +186,13 @@ export type Database = {
         Row: {
           age: number
           country: string
+          cover_letter: string | null
           created_at: string
           email: string
           full_name: string
           has_passport: boolean
           id: string
+          job_id: string | null
           kyc_completed: boolean | null
           manychat_subscriber_id: string | null
           notes: string | null
@@ -201,20 +203,24 @@ export type Database = {
           payment_status: string | null
           phone: string
           processing_fee: string | null
+          proposal_id: string | null
           recruitment_cycle: string | null
           status: Database["public"]["Enums"]["application_status"]
           telegram_chat_id: string | null
           updated_at: string
+          user_id: string | null
           whatsapp_phone: string | null
         }
         Insert: {
           age: number
           country: string
+          cover_letter?: string | null
           created_at?: string
           email: string
           full_name: string
           has_passport?: boolean
           id?: string
+          job_id?: string | null
           kyc_completed?: boolean | null
           manychat_subscriber_id?: string | null
           notes?: string | null
@@ -229,16 +235,19 @@ export type Database = {
           status?: Database["public"]["Enums"]["application_status"]
           telegram_chat_id?: string | null
           updated_at?: string
+          user_id?: string | null
           whatsapp_phone?: string | null
         }
         Update: {
           age?: number
           country?: string
+          cover_letter?: string | null
           created_at?: string
           email?: string
           full_name?: string
           has_passport?: boolean
           id?: string
+          job_id?: string | null
           kyc_completed?: boolean | null
           manychat_subscriber_id?: string | null
           notes?: string | null
@@ -253,7 +262,55 @@ export type Database = {
           status?: Database["public"]["Enums"]["application_status"]
           telegram_chat_id?: string | null
           updated_at?: string
+          user_id?: string | null
           whatsapp_phone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          contract_type: string | null
+          country: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          requirements: string[] | null
+          salary_range: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          contract_type?: string | null
+          country: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          requirements?: string[] | null
+          salary_range?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          contract_type?: string | null
+          country?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          requirements?: string[] | null
+          salary_range?: string | null
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -360,6 +417,50 @@ export type Database = {
           },
         ]
       }
+      messages: {
+        Row: {
+          application_id: string
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          recipient_type: string
+          sender_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean
+          recipient_type?: string
+          sender_id: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          recipient_type?: string
+          sender_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_templates: {
         Row: {
           content: string
@@ -389,6 +490,47 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      notifications: {
+        Row: {
+          application_id: string | null
+          created_at: string
+          id: string
+          message: string
+          read: boolean | null
+          title: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          application_id?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean | null
+          title: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          application_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean | null
+          title?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payment_transactions: {
         Row: {

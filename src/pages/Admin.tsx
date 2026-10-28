@@ -10,8 +10,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { MessagesList } from '@/components/messaging/MessagesList';
 import { toast } from 'sonner';
-import { Loader2, LogOut, Search, Users, CheckCircle, Clock, XCircle, RefreshCw, Shield, AlertTriangle } from 'lucide-react';
+import { Loader2, LogOut, Search, Users, CheckCircle, Clock, XCircle, RefreshCw, Shield, AlertTriangle, MessageSquare } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
 type Application = Database['public']['Tables']['applications']['Row'];
@@ -49,6 +51,7 @@ const Admin = () => {
   const [countryFilter, setCountryFilter] = useState<string>('all');
   const [bulkStatus, setBulkStatus] = useState<ApplicationStatus>('pending');
   const [isUpdating, setIsUpdating] = useState(false);
+  const [messagingApplication, setMessagingApplication] = useState<Application | null>(null);
   
   // Insurance state
   const [insuranceSubscriptions, setInsuranceSubscriptions] = useState<InsuranceSubscription[]>([]);
@@ -393,12 +396,13 @@ const Admin = () => {
                           <TableHead>Payment</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Date</TableHead>
+                          <TableHead className="text-right">Messages</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {filteredApplications.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
+                            <TableCell colSpan={11} className="text-center py-8 text-muted-foreground">
                               No applications found
                             </TableCell>
                           </TableRow>
@@ -433,6 +437,16 @@ const Admin = () => {
                               </TableCell>
                               <TableCell className="text-muted-foreground">
                                 {new Date(app.created_at).toLocaleDateString()}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setMessagingApplication(app)}
+                                >
+                                  <MessageSquare className="h-4 w-4 mr-2" />
+                                  Message
+                                </Button>
                               </TableCell>
                             </TableRow>
                           ))
@@ -604,6 +618,32 @@ const Admin = () => {
           </TabsContent>
         </Tabs>
       </main>
+
+      <Dialog
+        open={Boolean(messagingApplication)}
+        onOpenChange={(open) => {
+          if (!open) setMessagingApplication(null);
+        }}
+      >
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              {messagingApplication
+                ? `Messages with ${messagingApplication.full_name}`
+                : 'Application messages'}
+            </DialogTitle>
+            <DialogDescription>
+              Reply to the applicant about this application.
+            </DialogDescription>
+          </DialogHeader>
+          {messagingApplication && (
+            <MessagesList
+              applicationId={messagingApplication.id}
+              className="max-h-[60vh]"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
