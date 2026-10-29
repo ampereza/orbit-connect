@@ -273,6 +273,23 @@ const Apply = () => {
 
     const age = Number.parseInt(profileData.age, 10);
 
+    const { data: kycCheck, error: kycError } = await supabase
+      .from('applications')
+      .select('kyc_completed')
+      .eq('user_id', user.id)
+      .eq('kyc_completed', true)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (!kycError && (!kycCheck || kycCheck.length === 0)) {
+      toast({
+        title: 'KYC required',
+        description: 'Please complete your KYC verification before submitting an application.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {

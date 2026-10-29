@@ -555,6 +555,9 @@ const Dashboard = () => {
             <Button variant="outline" asChild>
               <Link to="/kyc">Profile</Link>
             </Button>
+            <Button variant="outline" asChild>
+              <Link to="/complete-profile">Complete profile</Link>
+            </Button>
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (

@@ -94,6 +94,23 @@ export const ApplicationForm = () => {
     setIsSubmitting(true);
 
     try {
+      const { data: kycCheck, error: kycError } = await supabase
+        .from("applications")
+        .select("kyc_completed")
+        .eq("user_id", user?.id || "")
+        .eq("kyc_completed", true)
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      if (!kycError && (!kycCheck || kycCheck.length === 0)) {
+        toast({
+          title: "KYC required",
+          description: "Please complete your KYC verification before submitting an application.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Create application in database
       const { data: application, error } = await supabase
         .from("applications")
