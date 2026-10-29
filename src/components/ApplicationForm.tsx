@@ -136,11 +136,14 @@ export const ApplicationForm = () => {
         title: "Application Saved! 📝",
         description: "Please complete your payment to finalize your application.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Application error:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to submit application. Please try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to submit application. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -175,11 +178,14 @@ export const ApplicationForm = () => {
       } else {
         throw new Error("Failed to initialize payment");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Payment error:", error);
       toast({
         title: "Payment Error",
-        description: error.message || "Failed to initialize payment. Please try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to initialize payment. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -298,7 +304,7 @@ export const ApplicationForm = () => {
                         <SelectValue placeholder="Select your country" />
                       </SelectTrigger>
                       <SelectContent>
-                        {applicationFees.map((country) => (
+                        {eligibilityCountries.map((country) => (
                           <SelectItem key={country.value} value={country.value}>
                             {country.label}
                           </SelectItem>

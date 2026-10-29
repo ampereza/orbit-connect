@@ -214,7 +214,7 @@ const Apply = () => {
   };
 
   const selectedCountry = useMemo(
-    () => applicationFees.find((country) => country.value === profileData.country),
+    () => eligibilityCountries.find((country) => country.value === profileData.country),
     [profileData.country],
   );
 
@@ -365,7 +365,7 @@ const Apply = () => {
 
   const countryLabel =
     selectedCountry?.label ||
-    applicationFees.find((country) => country.value === profileData.country)?.label ||
+    eligibilityCountries.find((country) => country.value === profileData.country)?.label ||
     profileData.country;
 
   return (
@@ -550,7 +550,7 @@ const Apply = () => {
                             required
                           >
                             <option value="">Select your country</option>
-                            {applicationFees.map((country) => (
+                            {eligibilityCountries.map((country) => (
                               <option key={country.value} value={country.value}>
                                 {country.label}
                               </option>
@@ -601,7 +601,7 @@ const Apply = () => {
                   <div className="rounded-xl border border-secondary/20 bg-secondary/10 p-4">
                     <p className="text-sm text-foreground">
                       <strong>Processing fee:</strong>{' '}
-                      <span className="font-bold text-secondary">flatApplicationFee.displayFee</span>
+                      <span className="font-bold text-secondary">{flatApplicationFee.displayFee}</span>
                     </p>
                   </div>
                 )}

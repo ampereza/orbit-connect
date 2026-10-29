@@ -1,5 +1,5 @@
 import { Check, AlertCircle } from "lucide-react";
-import { eligibilityCountries } from "@/config/applicationFees";
+import { eligibilityCountries, flatApplicationFee } from "@/config/applicationFees";
 
 const requirements = [
   { text: "Age between 18 and 49 years", required: true },
