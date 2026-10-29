@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { applicationFees } from '@/config/applicationFees';
+import { flatApplicationFee, eligibilityCountries } from '@/config/applicationFees';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -287,7 +287,7 @@ const Apply = () => {
           age,
           has_passport: profileData.hasPassport,
           cover_letter: coverLetter.trim(),
-          processing_fee: flatApplicationFee.fee
+          processing_fee: flatApplicationFee.fee,
           status: 'pending',
           job_id: jobId || null,
           user_id: user.id,
