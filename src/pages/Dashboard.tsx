@@ -421,6 +421,21 @@ const Dashboard = () => {
     }
   };
 
+  const startContract = async (contractId: string) => {
+    const { error } = await supabase
+      .from('contracts')
+      .update({ status: 'active' })
+      .eq('id', contractId);
+
+    if (error) {
+      toast.error('Failed to start the contract.');
+      return;
+    }
+
+    toast.success('Contract started.');
+    fetchData();
+  };
+
   const markContractCompleted = async (contractId: string) => {
     const { error } = await supabase
       .from('contracts')
@@ -1236,7 +1251,16 @@ const Dashboard = () => {
                                       View contract
                                     </Link>
                                   </Button>
-                                  {contract.status !== 'completed' && (
+                                  {contract.status === 'signed' && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => startContract(contract.id)}
+                                    >
+                                      Start work
+                                    </Button>
+                                  )}
+                                  {contract.status === 'active' && (
                                     <Button
                                       size="sm"
                                       variant="outline"
