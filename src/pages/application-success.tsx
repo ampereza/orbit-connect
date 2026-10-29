@@ -261,7 +261,7 @@ const ApplicationSuccess = () => {
                   {application.processing_fee && (
                     <div>
                       <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                        Processing fee
+                        Connects fee
                       </p>
                       <p className="font-medium">{application.processing_fee}</p>
                     </div>

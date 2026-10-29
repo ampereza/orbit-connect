@@ -80,7 +80,7 @@ serve(async (req) => {
           },
           customizations: {
             title: "Orbit Employ",
-            description: "Application Processing Fee",
+            description: "Connects Fee",
             logo: "https://orbitemploy.com/logo.png",
           },
           meta: {

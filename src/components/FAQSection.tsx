@@ -8,7 +8,7 @@ import {
 const faqs = [
   {
     question: "How much does it cost to apply?",
-    answer: "We charge a small country-specific application processing fee (e.g., UGX 50,000 for Uganda, KES 1,750 for Kenya). This covers verification, applicant management, and communication throughout the recruitment process.",
+    answer: "Each application costs 10 Connects. This covers verification, applicant management, and communication throughout the recruitment process.",
   },
   {
     question: "What is the loan-based deployment model?",

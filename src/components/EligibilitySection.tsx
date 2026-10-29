@@ -48,11 +48,11 @@ export const EligibilitySection = () => {
               <div className="flex items-center gap-3 mb-6">
                 <AlertCircle className="w-6 h-6 text-secondary" />
                 <h3 className="font-display text-2xl font-bold text-foreground">
-                  Processing Fee
+                  Connects Fee
                 </h3>
               </div>
               <p className="text-muted-foreground mb-8">
-                A small processing fee supports verification, applicant management, and communication throughout your recruitment journey.
+                A small connects fee supports verification, applicant management, and communication throughout your recruitment journey.
               </p>
 
               <div className="space-y-4">
@@ -66,7 +66,7 @@ export const EligibilitySection = () => {
                       <span className="font-semibold text-foreground">{country.name}</span>
                     </div>
                     <span className="font-display font-bold text-xl text-primary">
-                      {country.displayFee}
+                      {flatApplicationFee.displayFee}
                     </span>
                   </div>
                 ))}

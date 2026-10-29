@@ -8,13 +8,22 @@ export interface CountryFee {
   displayFee: string;
 }
 
-export const applicationFees: CountryFee[] = [
-  { value: "uganda", label: "Uganda 🇺🇬", name: "Uganda", flag: "🇺🇬", fee: "50000", currency: "UGX", displayFee: "UGX 50,000" },
-  { value: "kenya", label: "Kenya 🇰🇪", name: "Kenya", flag: "🇰🇪", fee: "1750", currency: "KES", displayFee: "KES 1,750" },
-  { value: "tanzania", label: "Tanzania 🇹🇿", name: "Tanzania", flag: "🇹🇿", fee: "35000", currency: "TZS", displayFee: "TZS 35,000" },
-  { value: "rwanda", label: "Rwanda 🇷🇼", name: "Rwanda", flag: "🇷🇼", fee: "17500", currency: "RWF", displayFee: "RWF 17,500" },
-  { value: "burundi", label: "Burundi 🇧🇮", name: "Burundi", flag: "🇧🇮", fee: "35000", currency: "BIF", displayFee: "BIF 35,000" },
-];
+// Flat fee of 10 connects for all applications
+export const flatApplicationFee = {
+  value: "connects",
+  label: "Connects 🔗",
+  name: "Connects",
+  flag: "🔗",
+  fee: "10",
+  currency: "Connects",
+  displayFee: "10 Connects",
+};
 
-// Countries displayed in the eligibility section
-export const eligibilityCountries = applicationFees;
+// Countries displayed in the eligibility section (no longer have individual fees)
+export const eligibilityCountries = [
+  { value: "uganda", label: "Uganda 🇺🇬", name: "Uganda", flag: "🇺🇬" },
+  { value: "kenya", label: "Kenya 🇰🇪", name: "Kenya", flag: "🇰🇪" },
+  { value: "tanzania", label: "Tanzania 🇹🇿", name: "Tanzania", flag: "🇹🇿" },
+  { value: "rwanda", label: "Rwanda 🇷🇼", name: "Rwanda", flag: "🇷🇼" },
+  { value: "burundi", label: "Burundi 🇧🇮", name: "Burundi", flag: "🇧🇮" },
+];

@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import { Send, Loader2, CreditCard } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { applicationFees } from "@/config/applicationFees";
+import { flatApplicationFee, eligibilityCountries } from "@/config/applicationFees";
 import { useAuth } from "@/hooks/useAuth";
 
 export const ApplicationForm = () => {
@@ -59,7 +59,7 @@ export const ApplicationForm = () => {
     }
   };
 
-  const selectedCountry = applicationFees.find((c) => c.value === formData.country);
+  const selectedCountry = eligibilityCountries.find((c) => c.value === formData.country);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,7 +105,7 @@ export const ApplicationForm = () => {
           country: formData.country,
           age: parseInt(formData.age),
           has_passport: formData.hasPassport,
-          processing_fee: selectedCountry.displayFee,
+          processing_fee: flatApplicationFee.fee,
           recruitment_cycle: "January 2025",
           job_id: jobId || null,
           user_id: user?.id || null,
@@ -158,8 +158,8 @@ export const ApplicationForm = () => {
         body: {
           action: "initialize",
           applicationId,
-          amount: parseFloat(selectedCountry.fee),
-          currency: selectedCountry.currency,
+          amount: parseFloat(flatApplicationFee.fee),
+          currency: flatApplicationFee.currency,
           email: formData.email,
           phone: formData.phone,
           fullName: formData.fullName,
@@ -329,7 +329,7 @@ export const ApplicationForm = () => {
                   <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-4">
                     <p className="text-sm text-foreground">
                       <strong>Processing Fee:</strong>{" "}
-                      <span className="text-secondary font-bold">{selectedCountry.displayFee}</span>
+                      <span className="text-secondary font-bold">{flatApplicationFee.displayFee}</span>
                     </p>
                   </div>
                 )}
@@ -411,7 +411,7 @@ export const ApplicationForm = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Processing Fee:</span>
-                    <span className="font-bold text-secondary">{selectedCountry?.displayFee}</span>
+                    <span className="font-bold text-secondary">{flatApplicationFee.displayFee}</span>
                   </div>
                 </div>
 
@@ -430,7 +430,7 @@ export const ApplicationForm = () => {
                   ) : (
                     <>
                       <CreditCard className="w-5 h-5" />
-                      Pay {selectedCountry?.displayFee}
+                      Pay {flatApplicationFee.displayFee}
                     </>
                   )}
                 </Button>

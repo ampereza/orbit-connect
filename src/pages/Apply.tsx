@@ -287,7 +287,7 @@ const Apply = () => {
           age,
           has_passport: profileData.hasPassport,
           cover_letter: coverLetter.trim(),
-          processing_fee: selectedCountry?.displayFee || '13 USD',
+          processing_fee: flatApplicationFee.fee
           status: 'pending',
           job_id: jobId || null,
           user_id: user.id,
@@ -601,7 +601,7 @@ const Apply = () => {
                   <div className="rounded-xl border border-secondary/20 bg-secondary/10 p-4">
                     <p className="text-sm text-foreground">
                       <strong>Processing fee:</strong>{' '}
-                      <span className="font-bold text-secondary">{selectedCountry.displayFee}</span>
+                      <span className="font-bold text-secondary">flatApplicationFee.displayFee</span>
                     </p>
                   </div>
                 )}
