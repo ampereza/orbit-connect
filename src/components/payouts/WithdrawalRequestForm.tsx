@@ -7,6 +7,7 @@ import {
   formatMoney,
   formatPayType,
   formatPayoutMethodSummary,
+  getAccruedEarnings,
   getWithdrawalAvailability,
 } from '@/config/payouts';
 import type { Database } from '@/integrations/supabase/types';
@@ -89,6 +90,14 @@ export const WithdrawalRequestForm = ({
     return Math.max(Number(selectedContract.fixed_amount || 0) - requested, 0);
   }, [contractWithdrawals, selectedContract]);
 
+  const accruedEarnings = selectedContract ? getAccruedEarnings(selectedContract) : 0;
+
+  const maxWithdrawal = selectedContract
+    ? selectedContract.pay_type === 'hourly'
+      ? accruedEarnings
+      : remainingFixedBalance
+    : null;
+
   useEffect(() => {
     setAmount('');
   }, [selectedContractId]);
@@ -121,8 +130,8 @@ export const WithdrawalRequestForm = ({
       return;
     }
 
-    if (remainingFixedBalance !== null && value > remainingFixedBalance) {
-      toast.error(`You can withdraw at most ${formatMoney(remainingFixedBalance, selectedContract.currency)}.`);
+    if (maxWithdrawal !== null && value > maxWithdrawal) {
+      toast.error(`You can withdraw at most ${formatMoney(maxWithdrawal, selectedContract.currency)}.`);
       return;
     }
 
@@ -225,6 +234,16 @@ export const WithdrawalRequestForm = ({
                 {selectedContract.pay_type === 'hourly' ? '/hr' : ''}
               </p>
             </div>
+            {selectedContract.pay_type === 'hourly' && (
+              <div>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Accrued earnings
+                </p>
+                <p className="font-medium">
+                  {formatMoney(accruedEarnings, selectedContract.currency)}
+                </p>
+              </div>
+            )}
             {remainingFixedBalance !== null && (
               <div>
                 <p className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -274,7 +293,7 @@ export const WithdrawalRequestForm = ({
             type="number"
             min="0"
             step="0.01"
-            max={remainingFixedBalance !== null ? remainingFixedBalance : undefined}
+            max={maxWithdrawal ?? undefined}
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
             placeholder="0.00"

@@ -84,6 +84,41 @@ export const getWithdrawalAvailability = (
   };
 };
 
+export interface AccruedEarningsInput {
+  pay_type: PayType;
+  hourly_rate?: number | null;
+  weekly_hours?: number | null;
+  fixed_amount?: number | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  signed_at?: string | null;
+}
+
+/**
+ * Accrued earnings for a contract. Hourly contracts accrue
+ * (hourly_rate * weekly_hours) for every full week since the contract
+ * started (falling back to the signing date). Fixed-rate contracts accrue
+ * their full value.
+ */
+export const getAccruedEarnings = (contract: AccruedEarningsInput): number => {
+  if (contract.pay_type === 'hourly') {
+    const rate = Number(contract.hourly_rate ?? 0);
+    const hours = Number(contract.weekly_hours ?? 0);
+    const start = contract.start_date
+      ? new Date(contract.start_date)
+      : contract.signed_at
+        ? new Date(contract.signed_at)
+        : new Date();
+    const end = contract.end_date ? new Date(contract.end_date) : new Date();
+    const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+    const elapsedWeeks = Math.max(0, (end.getTime() - start.getTime()) / msPerWeek);
+    const accrued = rate * hours * Math.floor(elapsedWeeks);
+    return Math.max(0, accrued);
+  }
+
+  return Number(contract.fixed_amount ?? 0);
+};
+
 export const formatPayoutMethodSummary = (method: {
   method: PayoutMethodValue;
   account_name: string;
