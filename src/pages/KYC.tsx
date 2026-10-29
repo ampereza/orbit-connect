@@ -115,6 +115,12 @@ const KYC = () => {
   useEffect(() => {
     const fetchApplication = async () => {
       if (!applicationId) {
+        toast({
+          title: 'No Application',
+          description: 'No application ID found. Please start a new application first.',
+          variant: 'destructive',
+        });
+        navigate('/apply');
         setLoading(false);
         return;
       }

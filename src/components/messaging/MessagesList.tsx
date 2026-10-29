@@ -154,6 +154,26 @@ export const MessagesList = ({ applicationId, className }: MessagesListProps) =>
       return;
     }
 
+    // Check Connects balance before message send
+    const { data: balanceResult } = await supabase
+      .from('worker_balances')
+      .select('balance, currency')
+      .eq('user_id', user.id)
+      .single();
+
+    const balance = Number(balanceResult?.balance ?? 0);
+    const messageFee = 1; // 1 Connects per message
+
+    if (balance < messageFee) {
+      toast({
+        title: 'Insufficient Connects',
+        description: `You need ${messageFee} Connects to send a message. Your current balance is ${balance}.`,
+        variant: 'destructive',
+      });
+      setIsSending(false);
+      return;
+    }
+
     setIsSending(true);
 
     try {

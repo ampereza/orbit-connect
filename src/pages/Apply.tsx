@@ -290,6 +290,26 @@ const Apply = () => {
       return;
     }
 
+    // Check Connects balance before application
+    const { data: balanceResult } = await supabase
+      .from('worker_balances')
+      .select('balance, currency')
+      .eq('user_id', user.id)
+      .single();
+
+    const balance = Number(balanceResult?.balance ?? 0);
+    const fee = flatApplicationFee.fee ? Number(flatApplicationFee.fee) : 10;
+
+    if (balance < fee) {
+      toast({
+        title: 'Insufficient Connects',
+        description: `You need ${fee} Connects to apply. Your current balance is ${balance}.`,
+        variant: 'destructive',
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {

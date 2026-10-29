@@ -21,6 +21,7 @@ interface PaymentRequest {
   transactionRef?: string;
   redirectUrl?: string;
   isClient?: boolean;
+  userId?: string;
 }
 
 serve(async (req) => {
@@ -31,7 +32,7 @@ serve(async (req) => {
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     const body: PaymentRequest = await req.json();
-    const { action, applicationId, amount, currency, email, phone, fullName, transactionRef, redirectUrl } = body;
+    const { action, applicationId, amount, currency, email, phone, fullName, transactionRef, redirectUrl, isClient, userId } = body;
 
     console.log("Flutterwave action:", action, { applicationId, amount, currency });
 
@@ -48,10 +49,10 @@ serve(async (req) => {
           amount,
           currency,
           status: "pending",
-          payment_type: "application_fee",
+          payment_type: applicationId ? "application_fee" : "connects_purchase",
           customer_email: email,
           customer_phone: phone,
-          metadata: { full_name: fullName },
+          metadata: { full_name: fullName, user_id: userId },
         })
         .select()
         .single();
@@ -170,6 +171,54 @@ serve(async (req) => {
             });
           } catch (mcError) {
             console.error("ManyChat notification error:", mcError);
+          }
+        } else {
+          // Connects purchase: credit the worker balance and record the purchase.
+          const { data: txFull, error: txFullError } = await supabase
+            .from("payment_transactions")
+            .select("amount, currency, metadata")
+            .eq("transaction_ref", transactionRef)
+            .single();
+
+          if (!txFullError && txFull) {
+            const metadata = (txFull.metadata ?? {}) as Record<string, unknown>;
+            const purchaseUserId = typeof metadata.user_id === "string" ? metadata.user_id : null;
+
+            if (purchaseUserId) {
+              const { data: balanceRow, error: balanceError } = await supabase
+                .from("worker_balances")
+                .select("balance")
+                .eq("user_id", purchaseUserId)
+                .maybeSingle();
+
+              if (!balanceError) {
+                const newBalance = (balanceRow?.balance ?? 0) + txFull.amount;
+                const { error: balanceWriteError } = await supabase
+                  .from("worker_balances")
+                  .upsert({
+                    user_id: purchaseUserId,
+                    balance: newBalance,
+                    currency: "Connects",
+                  });
+
+                if (balanceWriteError) {
+                  console.error("Worker balance credit error:", balanceWriteError);
+                }
+              }
+
+              const { error: purchaseError } = await supabase
+                .from("connects_purchases")
+                .insert({
+                  user_id: purchaseUserId,
+                  amount_usd: txFull.amount,
+                  connects: txFull.amount,
+                  status: "completed",
+                });
+
+              if (purchaseError) {
+                console.error("Connects purchase record error:", purchaseError);
+              }
+            }
           }
         }
 
