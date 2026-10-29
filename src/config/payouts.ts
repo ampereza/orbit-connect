@@ -50,12 +50,19 @@ export const hourlyWithdrawalIntervalDays = 7;
 export const formatPayType = (payType: PayType) =>
   payType === 'hourly' ? 'Hourly' : 'Fixed rate';
 
-export const formatMoney = (value: number, currency = 'USD') =>
-  new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency,
-    maximumFractionDigits: 2,
-  }).format(value);
+export const formatMoney = (value: number, currency = 'USD') => {
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: 2,
+    }).format(value);
+  } catch {
+    // Non-standard currencies (e.g. "Connects") are not valid ISO 4217 codes,
+    // so fall back to a plain number format instead of crashing.
+    return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(value);
+  }
+};
 
 export interface WithdrawalAvailability {
   allowed: boolean;
