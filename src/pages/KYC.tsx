@@ -116,11 +116,10 @@ const KYC = () => {
     const fetchApplication = async () => {
       if (!applicationId) {
         toast({
-          title: 'No Application',
-          description: 'No application ID found. Please start a new application first.',
+          title: 'Invalid Link',
+          description: 'No application ID found. Please complete your application first.',
           variant: 'destructive',
         });
-        navigate('/apply');
         setLoading(false);
         return;
       }
