@@ -52,6 +52,7 @@ import { ContractForm } from '@/components/contracts/ContractForm';
 
 type Contract = Database['public']['Tables']['contracts']['Row'];
 type WithdrawalRequest = Database['public']['Tables']['withdrawal_requests']['Row'];
+type WorkerBalance = Database['public']['Tables']['worker_balances']['Row'];
 
 interface Application {
   id: string;
@@ -158,6 +159,7 @@ const Dashboard = () => {
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [payoutMethod, setPayoutMethod] = useState<WorkerPayoutMethod | null>(null);
   const [withdrawalRequests, setWithdrawalRequests] = useState<WithdrawalRequest[]>([]);
+  const [workerBalance, setWorkerBalance] = useState<WorkerBalance | null>(null);
   const [payoutDialogOpen, setPayoutDialogOpen] = useState(false);
   const [withdrawalDialogOpen, setWithdrawalDialogOpen] = useState(false);
   const [contractProposal, setContractProposal] = useState<Proposal | null>(null);
@@ -267,6 +269,14 @@ const Dashboard = () => {
       setContracts((contractsResult.data ?? []) as Contract[]);
       setPayoutMethod((payoutResult.data as WorkerPayoutMethod | null) ?? null);
       setWithdrawalRequests((withdrawalsResult.data ?? []) as WithdrawalRequest[]);
+
+      const { data: balanceResult } = await supabase
+        .from('worker_balances')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      setWorkerBalance((balanceResult as WorkerBalance | null) ?? null);
 
       if (userJobs.length > 0) {
         const { data: received, error: receivedError } = await supabase
@@ -409,6 +419,21 @@ const Dashboard = () => {
     } finally {
       setUpdatingProposalId(null);
     }
+  };
+
+  const markContractCompleted = async (contractId: string) => {
+    const { error } = await supabase
+      .from('contracts')
+      .update({ status: 'completed' })
+      .eq('id', contractId);
+
+    if (error) {
+      toast.error('Failed to complete the contract.');
+      return;
+    }
+
+    toast.success('Contract marked as completed.');
+    fetchData();
   };
 
   const withdrawProposal = async (proposalId: string) => {
@@ -1204,12 +1229,23 @@ const Dashboard = () => {
                               );
 
                               return contract ? (
-                                <Button size="sm" variant="outline" asChild>
-                                  <Link to={`/contracts/${contract.id}/sign`}>
-                                    <FileSignature className="mr-1 h-4 w-4" />
-                                    View contract
-                                  </Link>
-                                </Button>
+                                <>
+                                  <Button size="sm" variant="outline" asChild>
+                                    <Link to={`/contracts/${contract.id}/sign`}>
+                                      <FileSignature className="mr-1 h-4 w-4" />
+                                      View contract
+                                    </Link>
+                                  </Button>
+                                  {contract.status !== 'completed' && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => markContractCompleted(contract.id)}
+                                    >
+                                      Mark completed
+                                    </Button>
+                                  )}
+                                </>
                               ) : (
                                 <Button
                                   size="sm"
@@ -1233,6 +1269,22 @@ const Dashboard = () => {
           {/* Payouts */}
           <TabsContent value="payouts" className="space-y-6">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <Card>
+                <CardContent className="flex items-center gap-4 p-4">
+                  <div className="rounded-full bg-secondary/10 p-3">
+                    <Wallet className="h-5 w-5 text-secondary" />
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold">
+                      {formatAmount(
+                        Number(workerBalance?.balance ?? 0),
+                        workerBalance?.currency || payoutMethod?.currency || 'USD',
+                      )}
+                    </p>
+                    <p className="text-sm text-muted-foreground">Available balance</p>
+                  </div>
+                </CardContent>
+              </Card>
               <Card>
                 <CardContent className="flex items-center gap-4 p-4">
                   <div className="rounded-full bg-primary/10 p-3">

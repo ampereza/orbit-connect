@@ -1163,6 +1163,7 @@ const Admin = () => {
                           <TableHead>Contract</TableHead>
                           <TableHead>Amount</TableHead>
                           <TableHead>Method</TableHead>
+                          <TableHead>Payout details</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Requested</TableHead>
                           <TableHead className="text-right">Actions</TableHead>
@@ -1171,7 +1172,7 @@ const Admin = () => {
                       <TableBody>
                         {filteredWithdrawals.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                            <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                               No withdrawal requests found
                             </TableCell>
                           </TableRow>
@@ -1191,6 +1192,21 @@ const Admin = () => {
                                   {formatCurrencyAmount(Number(withdrawal.amount), withdrawal.currency)}
                                 </TableCell>
                                 <TableCell>{payoutMethodLabels[withdrawal.method]}</TableCell>
+                                <TableCell className="max-w-[240px] text-muted-foreground">
+                                  {(() => {
+                                    const details = (withdrawal.payout_details ?? {}) as unknown as Record<string, string | null>;
+                                    if (withdrawal.method === 'mobile_money') {
+                                      return `${details.mobile_network || 'Mobile money'} ${details.account_number || ''}`.trim();
+                                    }
+                                    if (withdrawal.method === 'bank_transfer') {
+                                      return `${details.bank_name || 'Bank'} ${details.account_number || ''}`.trim();
+                                    }
+                                    if (withdrawal.method === 'paypal') {
+                                      return details.paypal_email || 'PayPal account';
+                                    }
+                                    return details.account_name || '';
+                                  })()}
+                                </TableCell>
                                 <TableCell>
                                   <Badge className={WITHDRAWAL_STATUS_COLORS[withdrawal.status]}>
                                     {withdrawal.status}
