@@ -48,6 +48,7 @@ import {
   type WorkerPayoutMethod,
 } from '@/components/payouts/PayoutMethodForm';
 import { WithdrawalRequestForm } from '@/components/payouts/WithdrawalRequestForm';
+import { ConnectsPurchase } from '@/components/payouts/ConnectsPurchase';
 import { ContractForm } from '@/components/contracts/ContractForm';
 
 type Contract = Database['public']['Tables']['contracts']['Row'];
@@ -1455,6 +1456,8 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             </div>
+
+            <ConnectsPurchase />
 
             <Card>
               <CardHeader>

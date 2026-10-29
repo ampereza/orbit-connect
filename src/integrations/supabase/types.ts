@@ -284,6 +284,44 @@ export type Database = {
           },
         ]
       }
+      connects_purchases: {
+        Row: {
+          amount_usd: number
+          connects: number
+          contract_id: string | null
+          created_at: string
+          refunded_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount_usd?: number
+          connects?: number
+          contract_id?: string | null
+          created_at?: string
+          refunded_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount_usd?: number
+          connects?: number
+          contract_id?: string | null
+          created_at?: string
+          refunded_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connects_purchases_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contracts: {
         Row: {
           created_at: string
