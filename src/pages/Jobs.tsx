@@ -1,13 +1,26 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import {
+  ArrowRight,
+  Briefcase,
+  FilterX,
+  MapPin,
+  Plus,
+  Search,
+  Send,
+} from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/hooks/useAuth';
+import { getCountryFlag, getCountryLabel } from '@/config/jobCountries';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Briefcase, MapPin, Search, ArrowRight } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { JobCreationForm } from '@/components/job-creation/JobCreationForm';
+import { ProposalForm } from '@/components/proposals/ProposalForm';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
 
 interface Job {
@@ -18,14 +31,19 @@ interface Job {
   requirements: string[] | null;
   salary_range: string | null;
   contract_type: string | null;
+  created_by: string | null;
+  created_at: string;
 }
 
 const Jobs = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('all');
-  const [countries, setCountries] = useState<string[]>([]);
+  const [postJobOpen, setPostJobOpen] = useState(false);
+  const [proposalJob, setProposalJob] = useState<Job | null>(null);
 
   useEffect(() => {
     fetchJobs();
@@ -40,12 +58,8 @@ const Jobs = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
-      setJobs(data || []);
-      
-      // Get unique countries
-      const uniqueCountries = [...new Set((data || []).map(job => job.country))];
-      setCountries(uniqueCountries);
+
+      setJobs((data ?? []) as Job[]);
     } catch (error) {
       console.error('Error fetching jobs:', error);
     } finally {
@@ -53,12 +67,51 @@ const Jobs = () => {
     }
   };
 
-  const filteredJobs = jobs.filter(job => {
-    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         job.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCountry = selectedCountry === 'all' || job.country === selectedCountry;
-    return matchesSearch && matchesCountry;
-  });
+  const countries = useMemo(
+    () => [...new Set(jobs.map((job) => job.country))].sort((a, b) => a.localeCompare(b)),
+    [jobs],
+  );
+
+  const filteredJobs = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+
+    return jobs.filter((job) => {
+      const matchesSearch =
+        !query ||
+        job.title.toLowerCase().includes(query) ||
+        job.description?.toLowerCase().includes(query) ||
+        job.country.toLowerCase().includes(query) ||
+        job.contract_type?.toLowerCase().includes(query) ||
+        job.requirements?.some((requirement) => requirement.toLowerCase().includes(query));
+
+      const matchesCountry = selectedCountry === 'all' || job.country === selectedCountry;
+
+      return matchesSearch && matchesCountry;
+    });
+  }, [jobs, searchTerm, selectedCountry]);
+
+  const hasActiveFilters = searchTerm.trim().length > 0 || selectedCountry !== 'all';
+
+  const resetFilters = () => {
+    setSearchTerm('');
+    setSelectedCountry('all');
+  };
+
+  const openPostJob = () => {
+    if (!user) {
+      navigate('/auth?redirect=/jobs');
+      return;
+    }
+    setPostJobOpen(true);
+  };
+
+  const openProposal = (job: Job) => {
+    if (!user) {
+      navigate('/auth?redirect=/jobs');
+      return;
+    }
+    setProposalJob(job);
+  };
 
   return (
     <>
@@ -72,82 +125,122 @@ const Jobs = () => {
       <div className="min-h-screen bg-background">
         <header className="border-b bg-card">
           <div className="container mx-auto px-4 py-6">
-            <div className="flex justify-between items-center mb-6">
+            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h1 className="text-3xl font-bold">Available Jobs</h1>
-                <p className="text-muted-foreground">Overseas employment opportunities</p>
+                <p className="text-muted-foreground">
+                  Overseas placements and freelance projects
+                </p>
               </div>
-              <Button asChild variant="outline">
-                <Link to="/dashboard">My Dashboard</Link>
-              </Button>
+              <div className="flex gap-2">
+                <Button onClick={openPostJob}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Post Job
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/dashboard">My Dashboard</Link>
+                </Button>
+              </div>
             </div>
 
             {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col gap-4 sm:flex-row">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search jobs..."
+                  placeholder="Search by title, country, skill, or contract type..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(event) => setSearchTerm(event.target.value)}
                   className="pl-10"
                 />
               </div>
               <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                <SelectTrigger className="w-full sm:w-[200px]">
+                <SelectTrigger className="w-full sm:w-[240px]">
                   <SelectValue placeholder="Filter by country" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Countries</SelectItem>
-                  {countries.map(country => (
-                    <SelectItem key={country} value={country}>{country}</SelectItem>
+                  {countries.map((country) => (
+                    <SelectItem key={country} value={country}>
+                      <span className="flex items-center gap-2">
+                        <span aria-hidden="true">{getCountryFlag(country)}</span>
+                        <span>{country}</span>
+                      </span>
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {hasActiveFilters && (
+                <Button variant="outline" onClick={resetFilters}>
+                  <FilterX className="mr-2 h-4 w-4" />
+                  Clear
+                </Button>
+              )}
             </div>
           </div>
         </header>
 
         <main className="container mx-auto px-4 py-8">
+          <div className="mb-4 flex items-center justify-between text-sm text-muted-foreground">
+            <span>
+              {filteredJobs.length} job{filteredJobs.length === 1 ? '' : 's'} found
+            </span>
+            {selectedCountry !== 'all' && <span>{getCountryLabel(selectedCountry)}</span>}
+          </div>
+
           {loading ? (
-            <div className="text-center py-12">
+            <div className="py-12 text-center">
               <p className="text-muted-foreground">Loading jobs...</p>
             </div>
           ) : filteredJobs.length === 0 ? (
-            <div className="text-center py-12">
-              <Briefcase className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <div className="py-12 text-center">
+              <Briefcase className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
               <p className="text-muted-foreground">No jobs found matching your criteria</p>
+              {hasActiveFilters && (
+                <Button variant="outline" className="mt-4" onClick={resetFilters}>
+                  Clear filters
+                </Button>
+              )}
             </div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredJobs.map((job) => (
-                <Card key={job.id} className="hover:shadow-lg transition-shadow">
+                <Card key={job.id} className="flex flex-col transition-shadow hover:shadow-lg">
                   <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-xl">{job.title}</CardTitle>
-                      <Badge variant="secondary">
-                        <MapPin className="h-3 w-3 mr-1" />
-                        {job.country}
+                    <div className="flex items-start justify-between gap-3">
+                      <CardTitle className="text-xl">
+                        <Link to={`/jobs/${job.id}`} className="hover:underline">
+                          {job.title}
+                        </Link>
+                      </CardTitle>
+                      <Badge variant="secondary" className="shrink-0">
+                        <MapPin className="mr-1 h-3 w-3" />
+                        {getCountryFlag(job.country)} {job.country}
                       </Badge>
                     </div>
-                    {job.contract_type && (
-                      <CardDescription>{job.contract_type}</CardDescription>
-                    )}
+                    <CardDescription className="flex items-center gap-2 capitalize">
+                      {job.contract_type || 'Full-time'}
+                      {job.created_by === user?.id && (
+                        <Badge variant="outline" className="text-[10px]">
+                          Your post
+                        </Badge>
+                      )}
+                    </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                  <CardContent className="flex flex-1 flex-col">
+                    <p className="mb-4 line-clamp-3 text-sm text-muted-foreground">
                       {job.description}
                     </p>
                     {job.salary_range && (
-                      <p className="text-sm font-medium mb-4">Salary: {job.salary_range}</p>
+                      <p className="mb-4 text-sm font-medium">Salary: {job.salary_range}</p>
                     )}
                     {job.requirements && job.requirements.length > 0 && (
                       <div className="mb-4">
-                        <p className="text-xs font-medium mb-2">Requirements:</p>
+                        <p className="mb-2 text-xs font-medium">Requirements:</p>
                         <div className="flex flex-wrap gap-1">
-                          {job.requirements.slice(0, 3).map((req, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
-                              {req}
+                          {job.requirements.slice(0, 3).map((requirement, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {requirement}
                             </Badge>
                           ))}
                           {job.requirements.length > 3 && (
@@ -158,17 +251,69 @@ const Jobs = () => {
                         </div>
                       </div>
                     )}
-                    <Button asChild className="w-full">
-                      <Link to={`/apply?job=${job.id}`}>
-                        Apply Now <ArrowRight className="h-4 w-4 ml-2" />
-                      </Link>
-                    </Button>
+
+                    <div className="mt-auto grid grid-cols-2 gap-2">
+                      <Button asChild>
+                        <Link to={`/apply?job=${job.id}`}>
+                          Apply
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <Button variant="outline" onClick={() => openProposal(job)}>
+                        <Send className="mr-2 h-4 w-4" />
+                        Proposal
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
           )}
         </main>
+
+        <Dialog open={postJobOpen} onOpenChange={setPostJobOpen}>
+          <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Post a job</DialogTitle>
+              <DialogDescription>
+                Publish a freelance project or overseas placement for applicants.
+              </DialogDescription>
+            </DialogHeader>
+            <JobCreationForm
+              onCreated={() => {
+                setPostJobOpen(false);
+                fetchJobs();
+              }}
+              onCancel={() => setPostJobOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog
+          open={Boolean(proposalJob)}
+          onOpenChange={(open) => {
+            if (!open) setProposalJob(null);
+          }}
+        >
+          <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Submit a proposal</DialogTitle>
+              <DialogDescription>
+                {proposalJob
+                  ? `Send your proposal for "${proposalJob.title}".`
+                  : 'Send your proposal to the employer.'}
+              </DialogDescription>
+            </DialogHeader>
+            {proposalJob && (
+              <ProposalForm
+                jobId={proposalJob.id}
+                onSubmitted={() => setProposalJob(null)}
+                onCancel={() => setProposalJob(null)}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+
         <MobileBottomNav />
       </div>
     </>

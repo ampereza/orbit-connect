@@ -15,6 +15,7 @@ import Jobs from "./pages/Jobs";
 import JobDetails from "./pages/JobDetails";
 import Apply from "./pages/Apply";
 import ApplicationSuccess from "./pages/application-success";
+import ContractSigning from "./pages/ContractSigning";
 import Insurance from "./pages/Insurance";
 import InsuranceCallback from "./pages/InsuranceCallback";
 import InsuranceTerms from "./pages/InsuranceTerms";
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/jobs/:id" element={<JobDetails />} />
               <Route path="/apply" element={<Apply />} />
               <Route path="/application-success" element={<ApplicationSuccess />} />
+              <Route path="/contracts/:id/sign" element={<ContractSigning />} />
               <Route path="/insurance" element={<Insurance />} />
               <Route path="/insurance/terms" element={<InsuranceTerms />} />
               <Route path="/insurance-callback" element={<InsuranceCallback />} />

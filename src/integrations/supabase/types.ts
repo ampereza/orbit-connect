@@ -231,6 +231,7 @@ export type Database = {
           payment_status?: string | null
           phone: string
           processing_fee?: string | null
+          proposal_id?: string | null
           recruitment_cycle?: string | null
           status?: Database["public"]["Enums"]["application_status"]
           telegram_chat_id?: string | null
@@ -258,6 +259,7 @@ export type Database = {
           payment_status?: string | null
           phone?: string
           processing_fee?: string | null
+          proposal_id?: string | null
           recruitment_cycle?: string | null
           status?: Database["public"]["Enums"]["application_status"]
           telegram_chat_id?: string | null
@@ -273,13 +275,138 @@ export type Database = {
             referencedRelation: "jobs"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "applications_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      contracts: {
+        Row: {
+          created_at: string
+          currency: string
+          description: string | null
+          employer_id: string | null
+          end_date: string | null
+          fixed_amount: number | null
+          hourly_rate: number | null
+          id: string
+          job_id: string | null
+          pay_type: Database["public"]["Enums"]["pay_type"]
+          proposal_id: string | null
+          signed_at: string | null
+          signature_name: string | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["contract_status"]
+          terms: string | null
+          title: string
+          updated_at: string
+          weekly_hours: number | null
+          worker_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          description?: string | null
+          employer_id?: string | null
+          end_date?: string | null
+          fixed_amount?: number | null
+          hourly_rate?: number | null
+          id?: string
+          job_id?: string | null
+          pay_type?: Database["public"]["Enums"]["pay_type"]
+          proposal_id?: string | null
+          signed_at?: string | null
+          signature_name?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["contract_status"]
+          terms?: string | null
+          title: string
+          updated_at?: string
+          weekly_hours?: number | null
+          worker_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          description?: string | null
+          employer_id?: string | null
+          end_date?: string | null
+          fixed_amount?: number | null
+          hourly_rate?: number | null
+          id?: string
+          job_id?: string | null
+          pay_type?: Database["public"]["Enums"]["pay_type"]
+          proposal_id?: string | null
+          signed_at?: string | null
+          signature_name?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["contract_status"]
+          terms?: string | null
+          title?: string
+          updated_at?: string
+          weekly_hours?: number | null
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracts_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: true
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      freelancer_profiles: {
+        Row: {
+          availability: string | null
+          created_at: string
+          hourly_rate: number | null
+          portfolio: string | null
+          ratings: number
+          skills: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          availability?: string | null
+          created_at?: string
+          hourly_rate?: number | null
+          portfolio?: string | null
+          ratings?: number
+          skills?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          availability?: string | null
+          created_at?: string
+          hourly_rate?: number | null
+          portfolio?: string | null
+          ratings?: number
+          skills?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       jobs: {
         Row: {
           contract_type: string | null
           country: string
           created_at: string
+          created_by: string | null
           description: string | null
           id: string
           is_active: boolean | null
@@ -292,6 +419,7 @@ export type Database = {
           contract_type?: string | null
           country: string
           created_at?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           is_active?: boolean | null
@@ -304,6 +432,7 @@ export type Database = {
           contract_type?: string | null
           country?: string
           created_at?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           is_active?: boolean | null
@@ -615,6 +744,50 @@ export type Database = {
         }
         Relationships: []
       }
+      proposals: {
+        Row: {
+          created_at: string
+          description: string
+          freelancer_id: string
+          id: string
+          job_id: string
+          proposed_fee: number
+          status: Database["public"]["Enums"]["proposal_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          freelancer_id: string
+          id?: string
+          job_id: string
+          proposed_fee: number
+          status?: Database["public"]["Enums"]["proposal_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          freelancer_id?: string
+          id?: string
+          job_id?: string
+          proposed_fee?: number
+          status?: Database["public"]["Enums"]["proposal_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposals_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       push_notification_logs: {
         Row: {
           application_id: string | null
@@ -710,6 +883,54 @@ export type Database = {
           },
         ]
       }
+      worker_payout_methods: {
+        Row: {
+          account_name: string
+          account_number: string | null
+          bank_name: string | null
+          country: string | null
+          created_at: string
+          currency: string
+          id: string
+          method: Database["public"]["Enums"]["payout_method"]
+          mobile_network: string | null
+          paypal_email: string | null
+          routing_number: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_name: string
+          account_number?: string | null
+          bank_name?: string | null
+          country?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          method: Database["public"]["Enums"]["payout_method"]
+          mobile_network?: string | null
+          paypal_email?: string | null
+          routing_number?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_name?: string
+          account_number?: string | null
+          bank_name?: string | null
+          country?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          method?: Database["public"]["Enums"]["payout_method"]
+          mobile_network?: string | null
+          paypal_email?: string | null
+          routing_number?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -730,6 +951,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      withdrawal_requests: {
+        Row: {
+          amount: number
+          contract_id: string
+          created_at: string
+          currency: string
+          id: string
+          method: Database["public"]["Enums"]["payout_method"]
+          notes: string | null
+          payout_details: Json
+          processed_at: string | null
+          requested_at: string
+          status: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          contract_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          method: Database["public"]["Enums"]["payout_method"]
+          notes?: string | null
+          payout_details?: Json
+          processed_at?: string | null
+          requested_at?: string
+          status?: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          contract_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          method?: Database["public"]["Enums"]["payout_method"]
+          notes?: string | null
+          payout_details?: Json
+          processed_at?: string | null
+          requested_at?: string
+          status?: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawal_requests_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -753,6 +1030,17 @@ export type Database = {
         | "matched"
         | "deployed"
         | "rejected"
+      contract_status:
+        | "draft"
+        | "pending_signature"
+        | "signed"
+        | "active"
+        | "completed"
+        | "cancelled"
+      pay_type: "hourly" | "fixed"
+      payout_method: "mobile_money" | "bank_transfer" | "paypal"
+      proposal_status: "pending" | "accepted" | "rejected" | "withdrawn"
+      withdrawal_status: "pending" | "approved" | "paid" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -889,6 +1177,18 @@ export const Constants = {
         "deployed",
         "rejected",
       ],
+      contract_status: [
+        "draft",
+        "pending_signature",
+        "signed",
+        "active",
+        "completed",
+        "cancelled",
+      ],
+      pay_type: ["hourly", "fixed"],
+      payout_method: ["mobile_money", "bank_transfer", "paypal"],
+      proposal_status: ["pending", "accepted", "rejected", "withdrawn"],
+      withdrawal_status: ["pending", "approved", "paid", "rejected"],
     },
   },
 } as const
