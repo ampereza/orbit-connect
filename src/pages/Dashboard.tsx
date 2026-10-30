@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Bell,
   Briefcase,
@@ -143,6 +143,7 @@ const formatMoney = (value: number) =>
 const Dashboard = () => {
   const { user, signOut, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [applications, setApplications] = useState<Application[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [proposals, setProposals] = useState<Proposal[]>([]);
@@ -191,6 +192,15 @@ const Dashboard = () => {
     window.addEventListener('switchTab', handleSwitchTab);
     return () => window.removeEventListener('switchTab', handleSwitchTab);
   }, []);
+
+  // Allow deep-linking to specific dashboard sections, e.g. /dashboard?tab=payouts
+  // (used to send users to the Buy Connects page).
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   const fetchData = async () => {
     if (!user) return;

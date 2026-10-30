@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
-import { Check, CheckCheck, Loader2, MessageSquare, Send } from 'lucide-react';
+import { Check, CheckCheck, Loader2, MessageSquare, Send, Wallet } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 
@@ -34,12 +36,17 @@ const typeStyles: Record<Message['type'], string> = {
 
 export const MessagesList = ({ applicationId, className }: MessagesListProps) => {
   const { user, isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [unreadIds, setUnreadIds] = useState<string[]>([]);
   const [draft, setDraft] = useState('');
   const [loading, setLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [showBuyConnectsPrompt, setShowBuyConnectsPrompt] = useState(false);
+  const [balance, setBalance] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  const messageFee = 1; // 1 Connects per message
 
   const loadMessages = useCallback(
     async (showSpinner = false) => {
@@ -161,19 +168,16 @@ export const MessagesList = ({ applicationId, className }: MessagesListProps) =>
       .eq('user_id', user.id)
       .single();
 
-    const balance = Number(balanceResult?.balance ?? 0);
-    const messageFee = 1; // 1 Connects per message
+    const currentBalance = Number(balanceResult?.balance ?? 0);
+    setBalance(currentBalance);
 
-    if (balance < messageFee) {
-      toast({
-        title: 'Insufficient Connects',
-        description: `You need ${messageFee} Connects to send a message. Your current balance is ${balance}.`,
-        variant: 'destructive',
-      });
+    if (currentBalance < messageFee) {
+      setShowBuyConnectsPrompt(true);
       setIsSending(false);
       return;
     }
 
+    setShowBuyConnectsPrompt(false);
     setIsSending(true);
 
     try {
@@ -318,6 +322,26 @@ export const MessagesList = ({ applicationId, className }: MessagesListProps) =>
       </div>
 
       <div className="border-t pt-3">
+        {showBuyConnectsPrompt && (
+          <Alert className="mb-3 space-y-3">
+            <div className="space-y-1">
+              <AlertTitle>Insufficient Connects</AlertTitle>
+              <AlertDescription>
+                You need {messageFee} Connects to send a message. Your current balance is {balance}. Buy
+                Connects to send more messages.
+              </AlertDescription>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="w-fit"
+              onClick={() => navigate('/dashboard?tab=payouts')}
+            >
+              <Wallet className="mr-2 h-4 w-4" />
+              Buy Connects
+            </Button>
+          </Alert>
+        )}
         <Textarea
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
