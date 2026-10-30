@@ -69,12 +69,10 @@ const educationLevels = [
 const maritalStatuses = ["Single", "Married", "Divorced", "Widowed"];
 
 const KYC = () => {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const applicationId = searchParams.get("application_id");
-  
+  // KYC is now linked to user profile, not application
   const [currentStep, setCurrentStep] = useState<Step>("bio");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [applicationData, setApplicationData] = useState<any>(null);
@@ -101,8 +99,7 @@ const KYC = () => {
   
   const [documents, setDocuments] = useState<DocumentUpload[]>([
     { type: "cv", label: "CV / Resume", file: null, uploaded: false, required: true },
-    { type: "national_id", label: "National ID Photo", file: null, uploaded: false, required: true },
-    { type: "passport_photo", label: "Passport Photo", file: null, uploaded: false, required: true },
+    { type: "identity_document", label: "Identity Document (National ID / Passport / Driver's License)", file: null, uploaded: false, required: true },
     { type: "education_cert", label: "Education Certificate", file: null, uploaded: false, required: false },
     { type: "medical_cert", label: "Medical Certificate", file: null, uploaded: false, required: false }
   ]);
@@ -114,34 +111,50 @@ const KYC = () => {
 
   useEffect(() => {
     const fetchApplication = async () => {
-      if (!applicationId) {
-        toast({
-          title: 'Invalid Link',
-          description: 'No application ID found. Please complete your application first.',
-          variant: 'destructive',
-        });
-        setLoading(false);
-        return;
-      }
-      
       try {
-        const { data, error } = await supabase
-          .from("applications")
+        // KYC is now linked to user profile, not application
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
           .select("*")
-          .eq("id", applicationId)
+          .eq("user_id", auth.uid())
           .single();
+        
+        if (profileError) throw profileError;
+        
+        setApplicationData({
+          kyc_completed: profile?.kyc_completed || false,
+          full_name: profile?.full_name || "",
+        });
+        
+        // Also load applicant_profiles if they exist
+        const { data: applicantData } = await supabase
+          .from("applicant_profiles")
+          .select("*")
+          .eq("user_id", auth.uid())
+          .single();
+        
+        if (applicantData) {
+          setDocuments([
+            { type: "cv", label: "CV / Resume", file: null, uploaded: !!applicantData.skills, required: true },
+            { type: "identity_document", label: "Identity Document", file: null, uploaded: !!applicantData.previous_employer, required: true },
+            { type: "education_cert", label: "Education Certificate", file: null, uploaded: false, required: false },
+            { type: "medical_cert", label: "Medical Certificate", file: null, uploaded: false, required: false }
+          ]);
           
-        if (error) throw error;
-        setApplicationData(data);
+          setReferences([
+            { reference_name: applicantData.previous_employer || "", reference_phone: "", reference_email: "", relationship: "", company_or_organization: "" },
+            { reference_name: "", reference_phone: "", reference_email: "", relationship: "", company_or_organization: "" }
+          ]);
+        }
       } catch (error) {
-        console.error("Error fetching application:", error);
+        console.error("Error loading KYC data:", error);
       } finally {
         setLoading(false);
       }
     };
     
     fetchApplication();
-  }, [applicationId]);
+  }, [auth.uid()]);
 
   const handleBioChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setBioData({ ...bioData, [e.target.name]: e.target.value });
@@ -312,10 +325,10 @@ const KYC = () => {
       } else if (currentStep === "references") {
         const success = await saveReferences();
         if (success) {
+          // Update user profile KYC status
           await supabase
-            .from("applications")
+            .from("profiles")
             .update({ kyc_completed: true })
-            .eq("id", applicationId);
             
           setCurrentStep("complete");
         }

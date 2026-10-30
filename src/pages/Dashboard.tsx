@@ -154,7 +154,6 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [messagingApplication, setMessagingApplication] = useState<Application | null>(null);
-  const [postJobOpen, setPostJobOpen] = useState(false);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [updatingProposalId, setUpdatingProposalId] = useState<string | null>(null);
@@ -559,10 +558,6 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Button onClick={() => setPostJobOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Post Job
-            </Button>
             <Button variant="outline" asChild>
               <Link to="/kyc">Profile</Link>
             </Button>
@@ -1150,7 +1145,6 @@ const Dashboard = () => {
                     <p className="mb-4 text-muted-foreground">
                       You have not posted any jobs yet.
                     </p>
-                    <Button onClick={() => setPostJobOpen(true)}>Post your first job</Button>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -1629,33 +1623,10 @@ const Dashboard = () => {
         </Tabs>
       </main>
 
-      <Dialog open={postJobOpen} onOpenChange={setPostJobOpen}>
-        <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Post a job</DialogTitle>
-            <DialogDescription>
-              Publish a freelance project or overseas placement.
-            </DialogDescription>
-          </DialogHeader>
-          <JobCreationForm
-            onCreated={() => {
-              setPostJobOpen(false);
-              fetchData();
-            }}
-            onCancel={() => setPostJobOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={payoutDialogOpen} onOpenChange={setPayoutDialogOpen}>
-        <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Payout method</DialogTitle>
             <DialogDescription>
               Choose how you want to receive your earnings. You must save this before
               signing a contract.
             </DialogDescription>
-          </DialogHeader>
           <PayoutMethodForm
             initial={payoutMethod}
             onSaved={(saved) => {
