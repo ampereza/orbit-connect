@@ -1623,10 +1623,15 @@ const Dashboard = () => {
         </Tabs>
       </main>
 
+      <Dialog open={payoutDialogOpen} onOpenChange={setPayoutDialogOpen}>
+        <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Payout method</DialogTitle>
             <DialogDescription>
               Choose how you want to receive your earnings. You must save this before
               signing a contract.
             </DialogDescription>
+          </DialogHeader>
           <PayoutMethodForm
             initial={payoutMethod}
             onSaved={(saved) => {
