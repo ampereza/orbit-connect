@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   Upload, 
   CheckCircle, 
@@ -55,6 +56,11 @@ interface DocumentUpload {
   required: boolean;
 }
 
+interface ApplicationData {
+  kyc_completed: boolean;
+  full_name: string;
+}
+
 const educationLevels = [
   "Primary School",
   "Secondary School (O-Level)",
@@ -71,11 +77,14 @@ const maritalStatuses = ["Single", "Married", "Divorced", "Widowed"];
 const KYC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const applicationId = searchParams.get("application_id") ?? "";
   
   // KYC is now linked to user profile, not application
   const [currentStep, setCurrentStep] = useState<Step>("bio");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [applicationData, setApplicationData] = useState<any>(null);
+  const [applicationData, setApplicationData] = useState<ApplicationData | null>(null);
   const [loading, setLoading] = useState(true);
   
   const [bioData, setBioData] = useState<BioData>({
@@ -116,7 +125,7 @@ const KYC = () => {
         const { data: profile, error: profileError } = await supabase
           .from("profiles")
           .select("*")
-          .eq("user_id", auth.uid())
+          .eq("user_id", user?.id)
           .single();
         
         if (profileError) throw profileError;
@@ -127,11 +136,12 @@ const KYC = () => {
         });
         
         // Also load applicant_profiles if they exist
+        // Also load applicant_profiles if they exist
         const { data: applicantData } = await supabase
           .from("applicant_profiles")
-          .select("*")
-          .eq("user_id", auth.uid())
-          .single();
+          .select("id, skills, previous_employer")
+          .eq("application_id", applicationId)
+          .maybeSingle();
         
         if (applicantData) {
           setDocuments([
@@ -154,7 +164,7 @@ const KYC = () => {
     };
     
     fetchApplication();
-  }, [auth.uid()]);
+  }, [user?.id, applicationId]);
 
   const handleBioChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setBioData({ ...bioData, [e.target.name]: e.target.value });

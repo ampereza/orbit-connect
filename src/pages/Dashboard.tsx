@@ -42,7 +42,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
 import { MessagesList } from '@/components/messaging/MessagesList';
-import { JobCreationForm } from '@/components/job-creation/JobCreationForm';
 import {
   PayoutMethodForm,
   type WorkerPayoutMethod,
@@ -822,14 +821,6 @@ const Dashboard = () => {
                     <Button
                       variant="outline"
                       className="w-full justify-start"
-                      onClick={() => setPostJobOpen(true)}
-                    >
-                      <Plus className="mr-2 h-4 w-4" />
-                      Post a Job
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start"
                       onClick={() => setActiveTab('payouts')}
                     >
                       <Wallet className="mr-2 h-4 w-4" />
@@ -1134,10 +1125,6 @@ const Dashboard = () => {
                   </CardTitle>
                   <CardDescription>Jobs you published on Orbit Connect</CardDescription>
                 </div>
-                <Button size="sm" onClick={() => setPostJobOpen(true)}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Post Job
-                </Button>
               </CardHeader>
               <CardContent>
                 {postedJobs.length === 0 ? (
