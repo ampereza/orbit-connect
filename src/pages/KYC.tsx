@@ -14,7 +14,6 @@ import {
   Briefcase, 
   Users, 
   Loader2,
-  AlertCircle,
   ArrowLeft,
   ArrowRight
 } from "lucide-react";
@@ -355,19 +354,6 @@ const KYC = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!applicationId) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-card rounded-3xl p-8 shadow-lg border border-border text-center">
-          <AlertCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
-          <h1 className="font-display text-2xl font-bold text-foreground mb-2">Invalid Link</h1>
-          <p className="text-muted-foreground mb-6">No application ID found. Please complete your application first.</p>
-          <Button variant="hero" onClick={() => navigate("/#apply")}>Apply Now</Button>
-        </div>
       </div>
     );
   }
