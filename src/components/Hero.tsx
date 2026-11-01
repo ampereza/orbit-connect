@@ -1,81 +1,110 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Globe, ArrowRight, Shield, Users } from "lucide-react";
+import { Search, Briefcase, Users } from "lucide-react";
+import logo from "@/assets/logo.png";
 
-export const Hero = () => {
-  const scrollToApply = () => {
-    document.getElementById("apply")?.scrollIntoView({ behavior: "smooth" });
+export default Hero = () => {
+  const [query, setQuery] = useState("");
+  const [mode, setMode] = useState<"freelancers" | "jobs">("jobs");
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = encodeURIComponent(query.trim());
+    if (mode === "jobs") navigate(`/jobs?search=${q}`);
+    else navigate(`/freelancers?search=${q}`);
   };
 
+  const popular = ["React developer", "Graphic Designer", "SEO Specialist", "UI/UX Design", "Content Writer"];
+
   return (
-    <section className="relative min-h-screen bg-hero overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-secondary/10 rounded-full blur-3xl animate-pulse-slow" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: "2s" }} />
-        
-        {/* Orbit decoration */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] opacity-20">
-          <div className="absolute inset-0 border border-secondary/30 rounded-full" />
-          <div className="absolute inset-8 border border-secondary/20 rounded-full" />
-          <div className="absolute inset-16 border border-secondary/10 rounded-full" />
-          <div className="w-3 h-3 bg-secondary rounded-full orbit-animation" />
-        </div>
-      </div>
-
-      <div className="container relative z-10 mx-auto px-4 pt-32 pb-20">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-secondary/10 border border-secondary/20 rounded-full px-4 py-2 mb-8 animate-fade-up">
-            <Globe className="w-4 h-4 text-secondary" />
-            <span className="text-secondary text-sm font-medium">Freelancing Platform for Global Talent</span>
-          </div>
-
-          {/* Main heading */}
-          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-card mb-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
-            Empowering East Africans for{" "}
-            <span className="text-gradient">Global Opportunities</span>
+    <section
+      className="relative overflow-hidden bg-gradient-to-br from-[#101B32] via-[#1e3a8a] to-[#2563EB] text-white min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh]"
+    >
+      <div className="container mx-auto px-4 py-20 md:py-28 max-w-7xl mx-auto">
+        <div className="max-w-3xl mx-auto text-center relative">
+          <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
+            Great Talent. Great Work. One Orbit.
           </h1>
-
-          {/* Subheading */}
-          <p className="text-lg md:text-xl text-card/70 max-w-2xl mx-auto mb-10 animate-fade-up" style={{ animationDelay: "0.2s" }}>
-            Connecting skilled workers from Uganda, Kenya, and Tanzania to verified employers 
-            across the Middle East. Apply once, get matched to opportunities.
+          <p className="text-base md:text-lg text-white/80 mb-8">
+            Connect with skilled professionals, discover exciting opportunities and build successful working relationships without boundaries.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-fade-up" style={{ animationDelay: "0.3s" }}>
-            <Button variant="hero" size="lg" onClick={scrollToApply}>
-              Apply Now
-              <ArrowRight className="w-5 h-5" />
+          <div className="flex justify-center gap-2 mb-4">
+            <button
+              onClick={() => setMode("jobs")}
+              className={`
+                px-4 py-2 rounded-full text-sm font-medium transition 
+                ${mode === "jobs" ? "bg-white text-[#101B32]" : "bg-white/10 text-white"}
+              `}
+            >
+              Find Jobs
+            </button>
+            <button
+              onClick={() => setMode("freelancers")}
+              className={`
+                px-4 py-2 rounded-full text-sm font-medium transition 
+                ${mode === "freelancers" ? "bg-white text-[#101B32]" : "bg-white/10 text-white"}
+              `}
+            >
+              Find Freelancers
+            </button>
+          </div>
+
+          <form onSubmit={handleSearch} className="flex gap-2 bg-white rounded-2xl p-2 shadow-lg max-w-2xl mx-auto mt-6">
+            <div className="flex items-center pl-3 text-muted-foreground">
+              <Search className="w-5 h-5" />
+            </div>
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Try 'React developer', 'Graphic Designer', 'SEO Specialist'..."
+              className="flex-1 outline-none text-foreground text-sm md:text-base bg-transparent"
+            />
+            <Button type="submit" variant="hero" className="rounded-xl">
+              Search
             </Button>
-            <Button variant="heroOutline" size="lg" onClick={() => document.getElementById("process")?.scrollIntoView({ behavior: "smooth" })}>
-              How It Works
+          </form>
+
+          <div className="mt-4 flex flex-wrap justify-center gap-2 mb-8">
+            {popular.map((p) => (
+              <button
+                key={p}
+                onClick={() => { setQuery(p); }}
+                className="text-xs bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition"
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center mb-8">
+            <Button
+              variant="hero"
+              size="lg"
+              asChild
+              className="bg-[#101B32] text-white font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-transform"
+            >
+              <a href="/freelancers" className="flex items-center gap-2">Find Talent</a>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              asChild
+              className="bg-white/10 border-white/30 text-white hover:bg-white/20 rounded-xl"
+            >
+              <a href="/jobs" className="flex items-center gap-2">Find Work</a>
             </Button>
           </div>
 
-          {/* Trust indicators */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto animate-fade-up" style={{ animationDelay: "0.4s" }}>
-            <div className="flex items-center justify-center gap-3 bg-card/5 backdrop-blur-sm rounded-xl p-4 border border-card/10">
-              <Shield className="w-6 h-6 text-secondary" />
-              <span className="text-card/90 font-medium">Verified Employers</span>
-            </div>
-            <div className="flex items-center justify-center gap-3 bg-card/5 backdrop-blur-sm rounded-xl p-4 border border-card/10">
-              <Users className="w-6 h-6 text-secondary" />
-              <span className="text-card/90 font-medium">5 Cycles Per Year</span>
-            </div>
-            <div className="flex items-center justify-center gap-3 bg-card/5 backdrop-blur-sm rounded-xl p-4 border border-card/10">
-              <Globe className="w-6 h-6 text-secondary" />
-              <span className="text-card/90 font-medium">No Upfront Fees</span>
-            </div>
+          <div className="mt-8 flex flex-wrap justify-center gap-4 text-sm text-white/70">
+            <span className="flex items-center gap-1"><Users className="w-4 h-4" /> Global Talent Network</span>
+            <span className="flex items-center gap-1"><Briefcase className="w-4 h-4" /> Remote Opportunities</span>
+            <span className="flex items-center gap-1"><Search className="w-4 h-4" /> Professional Collaboration</span>
           </div>
         </div>
-      </div>
-
-      {/* Bottom wave */}
-      <div className="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-          <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V120Z" fill="hsl(var(--background))"/>
-        </svg>
       </div>
     </section>
   );
