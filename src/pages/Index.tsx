@@ -7,7 +7,7 @@ import { LatestJobsSection } from "@/components/LatestJobsSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import { WhyChooseSection } from "@/components/WhyChooseSection";
 import AITalentMatchingSection from "@/components/AITalentMatchingSection";
-import TrendingSkillsSection from "@/components/TrendingSkillsSection";
+import { TrendingSkillsSection } from "@/components/TrendingSkillsSection";
 import SuccessStoriesSection from "@/components/SuccessStoriesSection";
 import EmployerCTASection from "@/components/EmployerCTASection";
 import FreelancerCTASection from "@/components/FreelancerCTASection";
