@@ -18,7 +18,7 @@ import {
   ArrowRight
 } from "lucide-react";
 
-type Step = "bio" | "documents" | "references" | "complete";
+type Step = "bio" | "documents" | "complete";
 
 interface BioData {
   previous_employer: string;
@@ -108,13 +108,8 @@ const [searchParams] = useSearchParams();
     { type: "cv", label: "CV / Resume", file: null, uploaded: false, required: true },
     { type: "identity_document", label: "Identity Document (National ID / Passport / Driver's License)", file: null, uploaded: false, required: true },
     { type: "education_cert", label: "Education Certificate", file: null, uploaded: false, required: false },
-    { type: "medical_cert", label: "Medical Certificate", file: null, uploaded: false, required: false }
   ]);
   
-  const [references, setReferences] = useState<Reference[]>([
-    { reference_name: "", reference_phone: "", reference_email: "", relationship: "", company_or_organization: "" },
-    { reference_name: "", reference_phone: "", reference_email: "", relationship: "", company_or_organization: "" }
-  ]);
 
   useEffect(() => {
     const fetchApplication = async () => {
@@ -146,13 +141,7 @@ const [searchParams] = useSearchParams();
             { type: "cv", label: "CV / Resume", file: null, uploaded: !!applicantData.skills, required: true },
             { type: "identity_document", label: "Identity Document", file: null, uploaded: !!applicantData.previous_employer, required: true },
             { type: "education_cert", label: "Education Certificate", file: null, uploaded: false, required: false },
-            { type: "medical_cert", label: "Medical Certificate", file: null, uploaded: false, required: false }
-          ]);
-          
-          setReferences([
-            { reference_name: applicantData.previous_employer || "", reference_phone: "", reference_email: "", relationship: "", company_or_organization: "" },
-            { reference_name: "", reference_phone: "", reference_email: "", relationship: "", company_or_organization: "" }
-          ]);
+                  ]);
         }
       } catch (error) {
         console.error("Error loading KYC data:", error);
@@ -174,17 +163,7 @@ const [searchParams] = useSearchParams();
     setDocuments(updated);
   };
 
-  const handleReferenceChange = (index: number, field: keyof Reference, value: string) => {
-    const updated = [...references];
-    updated[index][field] = value;
-    setReferences(updated);
-  };
 
-  const addReference = () => {
-    if (references.length < 5) {
-      setReferences([...references, { reference_name: "", reference_phone: "", reference_email: "", relationship: "", company_or_organization: "" }]);
-    }
-  };
 
   const uploadDocument = async (doc: DocumentUpload, index: number) => {
     if (!doc.file || !user?.id) return false;
@@ -268,35 +247,6 @@ const [searchParams] = useSearchParams();
     }
   };
 
-  const saveReferences = async () => {
-    if (!user?.id) return false;
-    
-    try {
-      const validRefs = references.filter(r => r.reference_name && r.reference_phone);
-      
-      if (validRefs.length < 2) {
-        toast({
-          title: "Error",
-          description: "Please provide at least 2 references",
-          variant: "destructive"
-        });
-        return false;
-      }
-      
-      const { error } = await supabase
-        .from("applicant_references")
-        .insert(validRefs.map(ref => ({
-          user_id: user?.id,
-          ...ref
-        })));
-        
-      if (error) throw error;
-      return true;
-    } catch (error) {
-      console.error("Error saving references:", error);
-      return false;
-    }
-  };
 
   const handleNext = async () => {
     setIsSubmitting(true);
@@ -329,20 +279,12 @@ const [searchParams] = useSearchParams();
           }
         }
         
-        setCurrentStep("references");
-      } else if (currentStep === "references") {
-        const success = await saveReferences();
-        if (success) {
-          // Update user profile KYC status
-          await supabase
-            .from("profiles")
-            .update({ kyc_completed: true })
-            
-          setCurrentStep("complete");
-        }
+        await supabase.from("profiles").update({ kyc_completed: true }).eq("user_id", user?.id);
+        
+        setCurrentStep("complete");
       }
-    } catch (error) {
-      console.error("Error:", error);
+      } catch (error) {
+        console.error("Error:", error);
       toast({ title: "Error", description: "Something went wrong", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
@@ -406,7 +348,6 @@ const [searchParams] = useSearchParams();
   const steps = [
     { key: "bio", label: "Bio Information", icon: User },
     { key: "documents", label: "Documents", icon: FileText },
-    { key: "references", label: "References", icon: Users }
   ];
 
   return (
@@ -701,85 +642,12 @@ const [searchParams] = useSearchParams();
             </div>
           )}
 
-          {/* References Step */}
-          {currentStep === "references" && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                  <Users className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <h2 className="font-display text-xl font-semibold text-foreground">References</h2>
-                  <p className="text-sm text-muted-foreground">Provide at least 2 professional or personal references</p>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                {references.map((ref, index) => (
-                  <div key={index} className="border border-border rounded-xl p-4">
-                    <h3 className="font-medium text-foreground mb-4">Reference {index + 1}</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Full Name *</Label>
-                        <Input 
-                          value={ref.reference_name}
-                          onChange={(e) => handleReferenceChange(index, "reference_name", e.target.value)}
-                          placeholder="Reference name"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Phone Number *</Label>
-                        <Input 
-                          value={ref.reference_phone}
-                          onChange={(e) => handleReferenceChange(index, "reference_phone", e.target.value)}
-                          placeholder="+256..."
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Email</Label>
-                        <Input 
-                          type="email"
-                          value={ref.reference_email}
-                          onChange={(e) => handleReferenceChange(index, "reference_email", e.target.value)}
-                          placeholder="email@example.com"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Relationship *</Label>
-                        <Input 
-                          value={ref.relationship}
-                          onChange={(e) => handleReferenceChange(index, "relationship", e.target.value)}
-                          placeholder="e.g., Former Employer, Teacher"
-                        />
-                      </div>
-                      <div className="space-y-2 md:col-span-2">
-                        <Label>Company/Organization</Label>
-                        <Input 
-                          value={ref.company_or_organization}
-                          onChange={(e) => handleReferenceChange(index, "company_or_organization", e.target.value)}
-                          placeholder="Where they work"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {references.length < 5 && (
-                <Button variant="outline" onClick={addReference} className="w-full">
-                  + Add Another Reference
-                </Button>
-              )}
-            </div>
-          )}
-
           {/* Navigation */}
           <div className="flex justify-between mt-8 pt-6 border-t border-border">
             <Button
               variant="outline"
               onClick={() => {
                 if (currentStep === "documents") setCurrentStep("bio");
-                else if (currentStep === "references") setCurrentStep("documents");
               }}
               disabled={currentStep === "bio" || isSubmitting}
             >
@@ -793,7 +661,7 @@ const [searchParams] = useSearchParams();
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Saving...
                 </>
-              ) : currentStep === "references" ? (
+              ) : currentStep === "documents" ? (
                 <>
                   Complete
                   <CheckCircle className="w-4 h-4 ml-2" />
