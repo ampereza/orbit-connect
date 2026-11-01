@@ -78,7 +78,6 @@ const KYC = () => {
   const { toast } = useToast();
   const { user } = useAuth();
 const [searchParams] = useSearchParams();
-const [applicationId, setApplicationId] = useState(searchParams.get("application_id") ?? "");
   
   // KYC is now linked to user profile, not application
   const [currentStep, setCurrentStep] = useState<Step>("bio");
@@ -120,22 +119,6 @@ const [applicationId, setApplicationId] = useState(searchParams.get("application
   useEffect(() => {
     const fetchApplication = async () => {
       try {
-        // Resolve application_id if not provided in URL
-        let appId = applicationId;
-        if (!appId && user?.id) {
-          const { data: app } = await supabase
-            .from("applications")
-            .select("id")
-            .eq("user_id", user.id)
-            .order("created_at", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          if (app?.id) {
-            appId = app.id;
-            setApplicationId(app.id);
-          }
-        }
-
         // KYC is now linked to user profile, not application
         const { data: profile, error: profileError } = await supabase
           .from("profiles")
@@ -155,7 +138,7 @@ const [applicationId, setApplicationId] = useState(searchParams.get("application
         const { data: applicantData } = await supabase
           .from("applicant_profiles")
           .select("id, skills, previous_employer")
-          .eq("application_id", applicationId)
+          .eq("user_id", user?.id)
           .maybeSingle();
         
         if (applicantData) {
@@ -179,7 +162,7 @@ const [applicationId, setApplicationId] = useState(searchParams.get("application
     };
     
     fetchApplication();
-  }, [user?.id, applicationId]);
+  }, [user?.id]);
 
   const handleBioChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setBioData({ ...bioData, [e.target.name]: e.target.value });
@@ -204,11 +187,11 @@ const [applicationId, setApplicationId] = useState(searchParams.get("application
   };
 
   const uploadDocument = async (doc: DocumentUpload, index: number) => {
-    if (!doc.file || !applicationId) return false;
+    if (!doc.file || !user?.id) return false;
     
     try {
       const fileExt = doc.file.name.split(".").pop();
-      const filePath = `${applicationId}/${doc.type}_${Date.now()}.${fileExt}`;
+      const filePath = `${user?.id}/${doc.type}_${Date.now()}.${fileExt}`;
       
       const { error: uploadError } = await supabase.storage
         .from("kyc-documents")
@@ -219,7 +202,7 @@ const [applicationId, setApplicationId] = useState(searchParams.get("application
       const { error: dbError } = await supabase
         .from("applicant_documents")
         .insert({
-          application_id: applicationId,
+          user_id: user?.id,
           document_type: doc.type,
           file_name: doc.file.name,
           file_path: filePath,
@@ -241,7 +224,7 @@ const [applicationId, setApplicationId] = useState(searchParams.get("application
   };
 
   const saveBioData = async () => {
-    if (!applicationId) return false;
+    if (!user?.id) return false;
     
     // Validate skills are provided
     if (!bioData.skills || bioData.skills.trim() === "") {
@@ -258,7 +241,7 @@ const [applicationId, setApplicationId] = useState(searchParams.get("application
       const { error } = await supabase
         .from("applicant_profiles")
         .upsert({
-          application_id: applicationId,
+          user_id: user?.id,
           previous_employer: bioData.previous_employer || null,
           job_title: bioData.job_title || null,
           years_of_experience: bioData.years_of_experience ? parseInt(bioData.years_of_experience) : null,
@@ -286,7 +269,7 @@ const [applicationId, setApplicationId] = useState(searchParams.get("application
   };
 
   const saveReferences = async () => {
-    if (!applicationId) return false;
+    if (!user?.id) return false;
     
     try {
       const validRefs = references.filter(r => r.reference_name && r.reference_phone);
@@ -303,7 +286,7 @@ const [applicationId, setApplicationId] = useState(searchParams.get("application
       const { error } = await supabase
         .from("applicant_references")
         .insert(validRefs.map(ref => ({
-          application_id: applicationId,
+          user_id: user?.id,
           ...ref
         })));
         
@@ -403,7 +386,7 @@ const [applicationId, setApplicationId] = useState(searchParams.get("application
             <Button 
               variant="hero" 
               className="w-full" 
-              onClick={() => navigate(`/insurance?application_id=${applicationId}&client=true`)}
+              onClick={() => navigate(`/insurance?client=true`)}
             >
               Get Insurance Now
             </Button>
