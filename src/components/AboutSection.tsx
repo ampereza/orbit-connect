@@ -111,7 +111,7 @@ export const AboutSection = () => {
             </div>
 
             {/* Trust indicators */}
-            <div className="mt-8 grid grid-cols-3 gap-4">
+            <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div className="text-center p-4 bg-card rounded-xl border border-border">
                 <p className="text-2xl font-bold text-secondary">7+</p>
                 <p className="text-xs text-muted-foreground">Years Active</p>
