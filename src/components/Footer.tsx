@@ -16,7 +16,7 @@ export const Footer = () => {
               from Uganda, Kenya, and Tanzania to verified employers across the Middle East.
             </p>
             <p className="text-secondary font-semibold">
-              Next Recruitment Cycle: January 2025
+              Freelancing Platform for Global Talent
             </p>
           </div>
 

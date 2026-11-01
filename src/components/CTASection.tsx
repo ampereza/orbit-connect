@@ -45,7 +45,7 @@ export const CTASection = () => {
         </div>
 
         <p className="text-card/50 text-sm mt-8">
-          Next recruitment cycle starts <span className="text-secondary font-semibold">January 2025</span>
+          Start hiring or get hired today
         </p>
       </div>
     </section>
