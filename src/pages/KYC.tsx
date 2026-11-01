@@ -106,6 +106,7 @@ const [searchParams] = useSearchParams();
   
   const [documents, setDocuments] = useState<DocumentUpload[]>([
     { type: "cv", label: "CV / Resume", file: null, uploaded: false, required: true },
+    { type: "selfie", label: "Live Selfie", file: null, uploaded: false, required: true },
     { type: "identity_document", label: "Identity Document (National ID / Passport / Driver's License)", file: null, uploaded: false, required: true },
     { type: "education_cert", label: "Education Certificate", file: null, uploaded: false, required: false },
   ]);
@@ -139,6 +140,7 @@ const [searchParams] = useSearchParams();
         if (applicantData) {
           setDocuments([
             { type: "cv", label: "CV / Resume", file: null, uploaded: !!applicantData.skills, required: true },
+            { type: "selfie", label: "Live Selfie", file: null, uploaded: false, required: true },
             { type: "identity_document", label: "Identity Document", file: null, uploaded: !!applicantData.previous_employer, required: true },
             { type: "education_cert", label: "Education Certificate", file: null, uploaded: false, required: false },
                   ]);
@@ -630,7 +632,8 @@ const [searchParams] = useSearchParams();
                           <input
                             type="file"
                             className="hidden"
-                            accept=".pdf,.jpg,.jpeg,.png"
+                            accept={doc.type === "selfie" ? "image/*" : ".pdf,.jpg,.jpeg,.png"}
+                            capture={doc.type === "selfie" ? "user" : undefined}
                             onChange={(e) => handleFileChange(index, e.target.files?.[0] || null)}
                           />
                         </label>
