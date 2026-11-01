@@ -3,7 +3,7 @@ import Hero from "@/components/Hero";
 import StatsSection from "@/components/StatsSection";
 import { CategoriesSection } from "@/components/CategoriesSection";
 import FeaturedFreelancersSection from "@/components/FeaturedFreelancersSection";
-import LatestJobsSection from "@/components/LatestJobsSection";
+import { LatestJobsSection } from "@/components/LatestJobsSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import { WhyChooseSection } from "@/components/WhyChooseSection";
 import AITalentMatchingSection from "@/components/AITalentMatchingSection";
