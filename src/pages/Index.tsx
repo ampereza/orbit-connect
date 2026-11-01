@@ -8,6 +8,7 @@ import HowItWorksSection from "@/components/HowItWorksSection";
 import { WhyChooseSection } from "@/components/WhyChooseSection";
 import AITalentMatchingSection from "@/components/AITalentMatchingSection";
 import { TrendingSkillsSection } from "@/components/TrendingSkillsSection";
+import { SEOContentSection } from "@/components/SEOContentSection";
 import SuccessStoriesSection from "@/components/SuccessStoriesSection";
 import EmployerCTASection from "@/components/EmployerCTASection";
 import FreelancerCTASection from "@/components/FreelancerCTASection";
@@ -44,6 +45,7 @@ const Index = () => {
         <WhyChooseSection />
         <AITalentMatchingSection />
         <TrendingSkillsSection />
+        <SEOContentSection />
         <SuccessStoriesSection />
         <EmployerCTASection />
         <FreelancerCTASection />
