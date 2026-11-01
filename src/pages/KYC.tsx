@@ -77,8 +77,8 @@ const KYC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
-  const [searchParams] = useSearchParams();
-  const applicationId = searchParams.get("application_id") ?? "";
+const [searchParams] = useSearchParams();
+const [applicationId, setApplicationId] = useState(searchParams.get("application_id") ?? "");
   
   // KYC is now linked to user profile, not application
   const [currentStep, setCurrentStep] = useState<Step>("bio");
@@ -120,6 +120,22 @@ const KYC = () => {
   useEffect(() => {
     const fetchApplication = async () => {
       try {
+        // Resolve application_id if not provided in URL
+        let appId = applicationId;
+        if (!appId && user?.id) {
+          const { data: app } = await supabase
+            .from("applications")
+            .select("id")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (app?.id) {
+            appId = app.id;
+            setApplicationId(app.id);
+          }
+        }
+
         // KYC is now linked to user profile, not application
         const { data: profile, error: profileError } = await supabase
           .from("profiles")
