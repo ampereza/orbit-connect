@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const SeoContentSection = () => {
-  const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState(() => sampleArticles);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -20,8 +20,7 @@ const SeoContentSection = () => {
         }
       } catch (error) {
         console.error("Error fetching articles:", error);
-        // Static fallback content
-        setArticles([]);
+        // Keep sampleArticles as fallback
       }
     };
 
