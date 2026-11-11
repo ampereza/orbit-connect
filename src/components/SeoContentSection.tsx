@@ -1,8 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Article {
+  id: string;
+  title: string;
+  excerpt: string | null;
+  category: string | null;
+  published_at: string | null;
+}
 
 const SeoContentSection = () => {
-  const [articles, setArticles] = useState(() => sampleArticles);
+  const [articles, setArticles] = useState<Article[]>([]);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -16,52 +26,17 @@ const SeoContentSection = () => {
         if (error) throw error;
 
         if (data && data.length > 0) {
-          setArticles(data as any[]);
+          setArticles(data as Article[]);
         }
+        // If no data, articles stays [] - depends on database only
       } catch (error) {
         console.error("Error fetching articles:", error);
-        // Keep sampleArticles as fallback
+        // Keep articles as [] - depends on database only, no fallback
       }
     };
 
     fetchArticles();
   }, []);
-
-  // Sample articles for demonstration - in production, these come from the database
-  const sampleArticles = [
-    {
-      id: "1",
-      title: "How to Start Freelancing in Uganda",
-      excerpt: "A comprehensive guide to getting your first freelance client from Uganda",
-      category: "Getting Started",
-      date: "2024-01-15",
-      reading_time: "8 min read",
-    },
-    {
-      id: "2",
-      title: "How to Find Your First Freelance Client",
-      excerpt: "Proven strategies for finding your first freelance project",
-      category: "Getting Started",
-      date: "2024-01-10",
-      reading_time: "6 min read",
-    },
-    {
-      id: "3",
-      title: "Best Skills for Remote Work",
-      excerpt: "Top skills that are in demand for remote work worldwide",
-      category: "Skills",
-      date: "2024-01-05",
-      reading_time: "10 min read",
-    },
-    {
-      id: "4",
-      title: "How to Hire a Freelance Developer",
-      excerpt: "Step-by-step guide to hiring the right developer for your project",
-      category: "Hiring",
-      date: "2024-01-20",
-      reading_time: "7 min read",
-    },
-  ];
 
   return (
     <section className="py-24 bg-background">
@@ -79,7 +54,7 @@ const SeoContentSection = () => {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {sampleArticles.map((article) => (
+          {articles.map((article) => (
             <div
               key={article.id}
               className="bg-card rounded-2xl p-6 border border-border hover:border-primary/30 transition-colors"
@@ -89,8 +64,7 @@ const SeoContentSection = () => {
               <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{article.excerpt}</p>
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
                 <span>{article.category}</span>
-                <span>{article.date}</span>
-                <span>{article.reading_time}</span>
+                <span>{article.published_at ? new Date(article.published_at).toLocaleDateString() : ''}</span>
               </div>
               <Button
                 asChild

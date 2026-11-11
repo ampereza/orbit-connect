@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Search, Briefcase, Users } from "lucide-react";
 import logo from "@/assets/logo.png";
 
-export default Hero = () => {
+const Hero = () => {
   const [query, setQuery] = useState("");
   const [mode, setMode] = useState<"freelancers" | "jobs">("jobs");
   const navigate = useNavigate();
@@ -109,3 +109,5 @@ export default Hero = () => {
     </section>
   );
 };
+
+export default Hero;
