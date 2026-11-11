@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Briefcase, FileText, Bell, LayoutDashboard, MessageSquare } from 'lucide-react';
+import { Home, Briefcase, Bell, LayoutDashboard, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -90,7 +90,7 @@ export const MobileBottomNav = () => {
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
-      <div className="grid grid-cols-5 h-16">
+      <div className="grid grid-cols-4 h-16">
         <Link
           to="/dashboard"
           className={`flex flex-col items-center justify-center gap-1 ${
@@ -109,16 +109,6 @@ export const MobileBottomNav = () => {
         >
           <Briefcase className="h-5 w-5" />
           <span className="text-xs">Jobs</span>
-        </Link>
-        
-        <Link
-          to="/apply"
-          className={`flex flex-col items-center justify-center gap-1 ${
-            isActive('/apply') ? 'text-primary' : 'text-muted-foreground'
-          }`}
-        >
-          <FileText className="h-5 w-5" />
-          <span className="text-xs">Apply</span>
         </Link>
 
         <Link
