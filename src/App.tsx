@@ -13,6 +13,7 @@ import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
 import Jobs from "./pages/Jobs";
 import JobDetails from "./pages/JobDetails";
+import Messages from "./pages/Messages";
 import Apply from "./pages/Apply";
 import ApplicationSuccess from "./pages/application-success";
 import ContractSigning from "./pages/ContractSigning";
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/jobs" element={<Jobs />} />
               <Route path="/jobs/:id" element={<JobDetails />} />
+              <Route path="/messages" element={<Messages />} />
               <Route path="/apply" element={<Apply />} />
               <Route path="/application-success" element={<ApplicationSuccess />} />
               <Route path="/contracts/:id/sign" element={<ContractSigning />} />

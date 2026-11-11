@@ -1,20 +1,22 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Briefcase, FileText, Bell, LayoutDashboard } from 'lucide-react';
+import { Home, Briefcase, FileText, Bell, LayoutDashboard, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export const MobileBottomNav = () => {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
     if (user) {
       fetchUnreadCount();
-      
+      fetchUnreadMessages();
+
       // Subscribe to notifications
-      const channel = supabase
+      const notificationsChannel = supabase
         .channel('notifications-changes')
         .on('postgres_changes', {
           event: '*',
@@ -26,11 +28,24 @@ export const MobileBottomNav = () => {
         })
         .subscribe();
 
+      // Subscribe to messages
+      const messagesChannel = supabase
+        .channel('messages-changes')
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'messages'
+        }, () => {
+          fetchUnreadMessages();
+        })
+        .subscribe();
+
       return () => {
-        supabase.removeChannel(channel);
+        supabase.removeChannel(notificationsChannel);
+        supabase.removeChannel(messagesChannel);
       };
     }
-  }, [user]);
+  }, [user, isAdmin]);
 
   const fetchUnreadCount = async () => {
     if (!user) return;
@@ -43,6 +58,29 @@ export const MobileBottomNav = () => {
     setUnreadCount(count || 0);
   };
 
+  const fetchUnreadMessages = async () => {
+    if (!user) return;
+    const { data: applications } = await supabase
+      .from('applications')
+      .select('id')
+      .eq('user_id', user.id);
+
+    const applicationIds = (applications ?? []).map((application) => application.id);
+    if (applicationIds.length === 0) {
+      setUnreadMessages(0);
+      return;
+    }
+
+    const { count } = await supabase
+      .from('messages')
+      .select('*', { count: 'exact', head: true })
+      .in('application_id', applicationIds)
+      .eq('recipient_type', isAdmin ? 'staff' : 'user')
+      .eq('read', false);
+
+    setUnreadMessages(count || 0);
+  };
+
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
     return location.pathname.startsWith(path);
@@ -52,7 +90,7 @@ export const MobileBottomNav = () => {
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
-      <div className="grid grid-cols-4 h-16">
+      <div className="grid grid-cols-5 h-16">
         <Link
           to="/dashboard"
           className={`flex flex-col items-center justify-center gap-1 ${
@@ -82,7 +120,24 @@ export const MobileBottomNav = () => {
           <FileText className="h-5 w-5" />
           <span className="text-xs">Apply</span>
         </Link>
-        
+
+        <Link
+          to="/messages"
+          className={`flex flex-col items-center justify-center gap-1 ${
+            isActive('/messages') ? 'text-primary' : 'text-muted-foreground'
+          }`}
+        >
+          <div className="relative">
+            <MessageSquare className="h-5 w-5" />
+            {unreadMessages > 0 && (
+              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">
+                {unreadMessages > 9 ? '9+' : unreadMessages}
+              </span>
+            )}
+          </div>
+          <span className="text-xs">Messages</span>
+        </Link>
+
         <Link
           to="/dashboard"
           className={`flex flex-col items-center justify-center gap-1 relative ${
